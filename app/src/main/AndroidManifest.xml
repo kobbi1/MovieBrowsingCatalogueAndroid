@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MovieBrowsingCatalogue"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="30">
+
+
+        <!-- Home Activity (Launcher) -->
+        <activity
+            android:name=".activities.HomeActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MovieBrowsingCatalogue">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Movies Activity -->
+        <activity
+            android:name=".activities.MoviesActivity"
+            android:exported="true"
+            android:label="Movies"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+
+        <activity
+            android:name=".activities.TvShowsActivity"
+            android:exported="true"
+            android:label="TV Shows"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+        <!-- Profile Activity -->
+        <activity
+            android:name=".activities.ProfileActivity"
+            android:exported="true"
+            android:label="Profile"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+
+    </application>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+</manifest>
