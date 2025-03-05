@@ -31,8 +31,6 @@ public class TopMoviesActivity extends NavigationActivity {
         setupNavigation(R.id.nav_top_movies, "Top Movies");
 
         moviesContainer = findViewById(R.id.moviesContainer);
-
-        // ✅ Fetch top movies when activity starts
         fetchTopMovies();
     }
 

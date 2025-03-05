@@ -39,45 +39,69 @@ public class NavigationActivity extends AppCompatActivity {
                 this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.nav_top_movies) {
-                    startActivity(new Intent(NavigationActivity.this, TopMoviesActivity.class));
-                } else if (id == R.id.nav_watchlist) {
-                    Toast.makeText(NavigationActivity.this, "Watchlists", Toast.LENGTH_SHORT).show();
-                } else if (id == R.id.nav_settings) {
-                    Toast.makeText(NavigationActivity.this, "Settings Selected", Toast.LENGTH_SHORT).show();
+
+        if (navigationView != null) {
+            navigationView.post(() -> navigationView.setCheckedItem(selectedNavItemId));
+        }
+
+        if (selectedNavItemId == R.id.nav_top_movies ||
+                selectedNavItemId == R.id.nav_watchlist ||
+                selectedNavItemId == R.id.nav_settings) {
+
+            bottomNavigationView.getMenu().setGroupCheckable(0, true, false);
+            for (int i = 0; i < bottomNavigationView.getMenu().size(); i++) {
+                bottomNavigationView.getMenu().getItem(i).setChecked(false);
+            }
+            bottomNavigationView.getMenu().setGroupCheckable(0, true, true);
+        } else {
+            bottomNavigationView.setSelectedItemId(selectedNavItemId);
+        }
+
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_top_movies) {
+                if (!(this instanceof TopMoviesActivity)) {
+                    startActivity(new Intent(this, TopMoviesActivity.class));
+                    finish();
                 }
-                drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            } else if (id == R.id.nav_watchlist) {
+                if (!(this instanceof WatchlistActivity)) {
+                    startActivity(new Intent(this, WatchlistActivity.class));
+                    finish();
+                }
+                return true;
+            } else if (id == R.id.nav_settings) {
+                if (!(this instanceof SettingsActivity)) {
+                    startActivity(new Intent(this, SettingsActivity.class));
+                    finish();
+                }
                 return true;
             }
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
         });
-        bottomNavigationView.setSelectedItemId(selectedNavItemId);
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int itemId = item.getItemId();
-                if (itemId == R.id.nav_home) {
-                    startActivity(new Intent(NavigationActivity.this, HomeActivity.class));
-                    finish();
-                    return true;
-                } else if (itemId == R.id.nav_movies) {
-                    startActivity(new Intent(NavigationActivity.this, MoviesActivity.class));
-                    finish();
-                    return true;
-                } else if (itemId == R.id.nav_tvshows) {
-                    startActivity(new Intent(NavigationActivity.this, TvShowsActivity.class));
-                    finish();
-                    return true;
-                } else if (itemId == R.id.nav_profile) {
-                    startActivity(new Intent(NavigationActivity.this, ProfileActivity.class));
-                    finish();
-                    return true;
-                }
-                return false;
+
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home && !(this instanceof HomeActivity)) {
+                startActivity(new Intent(this, HomeActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.nav_movies && !(this instanceof MoviesActivity)) {
+                startActivity(new Intent(this, MoviesActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.nav_tvshows && !(this instanceof TvShowsActivity)) {
+                startActivity(new Intent(this, TvShowsActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.nav_profile && !(this instanceof ProfileActivity)) {
+                startActivity(new Intent(this, ProfileActivity.class));
+                finish();
+                return true;
             }
+            return false;
         });
     }
 
