@@ -12,4 +12,7 @@ public interface ApiService {
 
     @GET("tvshows")
     Call<List<Movie>> getTvShows();
+
+    @GET("movies/top-movies")
+    Call<List<Movie>> getTopMovies();
 }

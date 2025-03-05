@@ -45,6 +45,12 @@
             android:exported="true"
             android:label="Profile"
             android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+        <!-- Top Movies Activity -->
+        <activity
+            android:name=".activities.TopMoviesActivity"
+            android:exported="true"
+            android:label="Profile"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
 
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
