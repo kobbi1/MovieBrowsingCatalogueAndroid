@@ -1,6 +1,5 @@
 package com.example.moviebrowsingcatalogue.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,60 +8,69 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.moviebrowsingcatalogue.R;
 import com.example.moviebrowsingcatalogue.RetrofitClient;
 import com.example.moviebrowsingcatalogue.core.Movie;
 import com.example.moviebrowsingcatalogue.services.ApiService;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MoviesActivity extends NavigationActivity {
+public class TopMoviesActivity extends NavigationActivity {
 
     private LinearLayout moviesContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movies);
+        setContentView(R.layout.activity_topmovies);
 
-        setupNavigation(R.id.nav_movies, "Movies");
+        setupNavigation(R.id.nav_top_movies, "Top Movies");
 
         moviesContainer = findViewById(R.id.moviesContainer);
-        fetchMovies();
+        fetchTopMovies();
     }
 
-    private void fetchMovies() {
+    private void fetchTopMovies() {
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-        Call<List<Movie>> call = apiService.getMovies();  // Calls the movies API
+        Call<List<Movie>> call = apiService.getTopMovies();
 
         call.enqueue(new Callback<List<Movie>>() {
             @Override
             public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Movie> movies = response.body();
-                    displayMovies(movies);
+                    List<Movie> topMovies = response.body();
+                    displayMovies(topMovies);
                 } else {
-                    Toast.makeText(MoviesActivity.this, "API Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    Log.e("MoviesActivity", "API Error: " + response.code() + " - " + response.message());
+                    Toast.makeText(TopMoviesActivity.this, "API Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Log.e("TopMoviesActivity", "API Error: " + response.code() + " - " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Movie>> call, Throwable t) {
-                Toast.makeText(MoviesActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
-                Log.e("MoviesActivity", "Network Error: " + t.getMessage());
+                Toast.makeText(TopMoviesActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                Log.e("TopMoviesActivity", "Network Error: " + t.getMessage());
             }
         });
     }
 
     private void displayMovies(List<Movie> movies) {
         moviesContainer.removeAllViews();
+
+        if (movies == null || movies.isEmpty()) {
+            TextView noMoviesTextView = new TextView(this);
+            noMoviesTextView.setText("No movies have a rating");
+            noMoviesTextView.setTextSize(18);
+            noMoviesTextView.setPadding(16, 16, 16, 16);
+            noMoviesTextView.setGravity(android.view.Gravity.CENTER);
+
+            moviesContainer.addView(noMoviesTextView);
+            return;
+        }
 
         for (Movie movie : movies) {
             View movieView = LayoutInflater.from(this).inflate(R.layout.item_movie_dynamic, moviesContainer, false);
