@@ -71,6 +71,12 @@ public class NavigationActivity extends AppCompatActivity {
                     finish();
                 }
                 return true;
+            } else if (id == R.id.nav_genres) {
+                if (!(this instanceof SettingsActivity)) {
+                    startActivity(new Intent(this, GenresActivity.class));
+                    finish();
+                }
+                return true;
             } else if (id == R.id.nav_settings) {
                 if (!(this instanceof SettingsActivity)) {
                     startActivity(new Intent(this, SettingsActivity.class));
