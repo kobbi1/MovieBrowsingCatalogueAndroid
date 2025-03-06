@@ -12,6 +12,11 @@
         android:title="Watchlists" />
 
     <item
+        android:id="@+id/nav_genres"
+        android:title="Genres"
+        android:icon="@drawable/ic_genre"/>
+
+    <item
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings"
         android:title="Settings" />
