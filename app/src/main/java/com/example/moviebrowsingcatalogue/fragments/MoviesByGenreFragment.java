@@ -22,28 +22,42 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MoviesFragment extends Fragment {
+public class MoviesByGenreFragment extends Fragment {
 
     private LinearLayout moviesContainer;
-    private String type; // "movies" or "tvshows"
-
-    public MoviesFragment(String type) {
-        this.type = type;
-    }
+    private String genre;
+    private String type;
+    private ApiService apiService;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
         moviesContainer = view.findViewById(R.id.moviesContainer);
+        apiService = RetrofitClient.getClient().create(ApiService.class);
 
-        fetchMovies();
+        if (getArguments() != null) {
+            genre = getArguments().getString("genre");
+            type = getArguments().getString("type");
+        }
+
+        if (genre == null || type == null) {
+            showToast("Invalid genre or type");
+            return view;
+        }
+
+        fetchMoviesByGenre();
         return view;
     }
 
-    private void fetchMovies() {
-        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-        Call<List<Movie>> call = type.equals("movies") ? apiService.getMovies() : apiService.getTvShows();
+    private void fetchMoviesByGenre() {
+        Call<List<Movie>> call;
+
+        if (type.equals("movies")) {
+            call = apiService.getMoviesBySpecificCategory(genre);
+        } else {
+            call = apiService.getTvShowsBySpecificCategory(genre);
+        }
 
         call.enqueue(new Callback<List<Movie>>() {
             @Override
@@ -51,15 +65,15 @@ public class MoviesFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     displayMovies(response.body());
                 } else {
-                    Toast.makeText(getContext(), "API Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    Log.e("MoviesFragment", "API Error: " + response.code() + " - " + response.message());
+                    showToast("API Error: " + response.code());
+                    Log.e("MoviesByGenreFragment", "API Error: " + response.code() + " - " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Movie>> call, Throwable t) {
-                Toast.makeText(getContext(), "Network Error", Toast.LENGTH_SHORT).show();
-                Log.e("MoviesFragment", "Network Error: " + t.getMessage());
+                showToast("Network Error");
+                Log.e("MoviesByGenreFragment", "Network Error: " + t.getMessage());
             }
         });
     }
@@ -84,6 +98,12 @@ public class MoviesFragment extends Fragment {
                     .into(coverImageView);
 
             moviesContainer.addView(movieView);
+        }
+    }
+
+    private void showToast(String message) {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
     }
 }
