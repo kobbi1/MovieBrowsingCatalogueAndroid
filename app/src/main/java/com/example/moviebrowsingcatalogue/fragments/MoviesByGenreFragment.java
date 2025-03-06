@@ -13,59 +13,76 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
-import com.example.moviebrowsingcatalogue.core.Movie;
-import com.example.moviebrowsingcatalogue.services.ApiService;
 import com.example.moviebrowsingcatalogue.R;
 import com.example.moviebrowsingcatalogue.RetrofitClient;
+import com.example.moviebrowsingcatalogue.core.Movie;
+import com.example.moviebrowsingcatalogue.services.ApiService;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TvShowsFragment extends Fragment {
+public class MoviesByGenreFragment extends Fragment {
 
     private LinearLayout moviesContainer;
+    private String genre;
+    private String type;
+    private ApiService apiService;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
-
         moviesContainer = view.findViewById(R.id.moviesContainer);
-        fetchMovies();
+        apiService = RetrofitClient.getClient().create(ApiService.class);
 
+        if (getArguments() != null) {
+            genre = getArguments().getString("genre");
+            type = getArguments().getString("type");
+        }
+
+        if (genre == null || type == null) {
+            showToast("Invalid genre or type");
+            return view;
+        }
+
+        fetchMoviesByGenre();
         return view;
     }
 
-    private void fetchMovies() {
-        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-        Call<List<Movie>> call = apiService.getTvShows();
+    private void fetchMoviesByGenre() {
+        Call<List<Movie>> call;
+
+        if (type.equals("movies")) {
+            call = apiService.getMoviesBySpecificCategory(genre);
+        } else {
+            call = apiService.getTvShowsBySpecificCategory(genre);
+        }
 
         call.enqueue(new Callback<List<Movie>>() {
             @Override
             public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Movie> movies = response.body();
-                    displayMovies(movies);
+                    displayMovies(response.body());
                 } else {
-                    Toast.makeText(getActivity(), "API Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    Log.e("MovieFragment", "API Error: " + response.code() + " - " + response.message());
+                    showToast("API Error: " + response.code());
+                    Log.e("MoviesByGenreFragment", "API Error: " + response.code() + " - " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Movie>> call, Throwable t) {
-                Toast.makeText(getActivity(), "Network Error", Toast.LENGTH_SHORT).show();
-                Log.e("MovieFragment", "Network Error: " + t.getMessage());
+                showToast("Network Error");
+                Log.e("MoviesByGenreFragment", "Network Error: " + t.getMessage());
             }
         });
     }
 
     private void displayMovies(List<Movie> movies) {
-        moviesContainer.removeAllViews(); // Clear previous data
+        moviesContainer.removeAllViews();
 
         for (Movie movie : movies) {
-            View movieView = getLayoutInflater().inflate(R.layout.item_movie_dynamic, moviesContainer, false);
+            View movieView = LayoutInflater.from(getContext()).inflate(R.layout.item_movie_dynamic, moviesContainer, false);
 
             TextView titleTextView = movieView.findViewById(R.id.titleTextView);
             TextView genreTextView = movieView.findViewById(R.id.genreTextView);
@@ -76,10 +93,17 @@ public class TvShowsFragment extends Fragment {
             genreTextView.setText("Genre: " + movie.getGenre());
             directorTextView.setText("Director: " + movie.getDirector());
 
-            // Load movie cover image using Glide
-            Glide.with(this).load(movie.getCoverImage()).into(coverImageView);
+            Glide.with(this)
+                    .load(movie.getCoverImage())
+                    .into(coverImageView);
 
             moviesContainer.addView(movieView);
+        }
+    }
+
+    private void showToast(String message) {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
     }
 }

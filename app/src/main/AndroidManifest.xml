@@ -51,6 +51,24 @@
             android:exported="true"
             android:label="Profile"
             android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+        <!-- Genres Activity -->
+        <activity
+            android:name=".activities.GenresActivity"
+            android:exported="true"
+            android:label="Profile"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+        <!-- Movies By Genre Activity -->
+        <activity
+            android:name=".activities.MoviesByGenreActivity"
+            android:exported="true"
+            android:label="Profile"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+        <!-- Settings Activity -->
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:exported="true"
+            android:label="Profile"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
 
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
