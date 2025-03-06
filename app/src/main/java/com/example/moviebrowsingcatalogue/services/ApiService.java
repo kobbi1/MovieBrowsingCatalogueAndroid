@@ -26,19 +26,15 @@ public interface ApiService {
     Call<List<Movie>> getTopMovies();
 
 
-    // User Authentication APIs
-    @FormUrlEncoded
-    @POST("auth/login")
+    // User Auth
+    @POST("users/login")
     Call<AuthResponse> loginUser(
-            @Field("email") String email,
-            @Field("password") String password
+            @Body User user
     );
 
-    @FormUrlEncoded
-    @POST("auth/register")
-    Call<AuthResponse> registerUser(
-            @Field("email") String email,
-            @Field("password") String password
+    @POST("users/signup")
+    Call<AuthResponse> signupUser(
+            @Body User user
     );
 
     @GET("user/profile")
