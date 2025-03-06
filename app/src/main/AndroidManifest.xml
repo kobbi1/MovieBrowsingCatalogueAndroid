@@ -45,6 +45,11 @@
             android:exported="true"
             android:label="Profile"
             android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+        <activity
+            android:name=".activities.UserManagementActivity"
+            android:exported="true"
+            android:label="UserManagement"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
         <!-- Top Movies Activity -->
         <activity
             android:name=".activities.TopMoviesActivity"
