@@ -16,7 +16,6 @@ public interface ApiService {
 
     @GET("movies/top-movies")
     Call<List<Movie>> getTopMovies();
-
     @GET("movies/categories")
     Call<List<String>> getMovieCategories();
     @GET("tvshows/categories")
