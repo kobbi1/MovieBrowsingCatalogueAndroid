@@ -24,6 +24,7 @@ public class ProfileFragment extends Fragment {
     private TextView usernameTextView, emailTextView;
     private Button logoutButton, editProfileButton, changePasswordButton;
     private SharedPreferences prefs;
+    private long userId;
 
     @Nullable
     @Override
@@ -37,6 +38,8 @@ public class ProfileFragment extends Fragment {
         changePasswordButton = view.findViewById(R.id.changePasswordButton);
 
         prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
+        userId = prefs.getLong("userId", -1);
+
         String username = prefs.getString("username", "Guest");
         String email = prefs.getString("email", "Not available");
 
@@ -47,11 +50,13 @@ public class ProfileFragment extends Fragment {
 
         editProfileButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+            intent.putExtra("userId", userId);
             startActivity(intent);
         });
 
         changePasswordButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+            intent.putExtra("userId", userId);
             startActivity(intent);
         });
 

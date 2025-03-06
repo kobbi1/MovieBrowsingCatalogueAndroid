@@ -40,7 +40,7 @@ public class EditProfileActivity extends AppCompatActivity {
         apiService = RetrofitClient.getClient().create(ApiService.class);
         prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
 
-        userId = prefs.getLong("userId", -1);
+        userId = getIntent().getLongExtra("userId", -1);
         String username = prefs.getString("username", "");
         String email = prefs.getString("email", "");
 
