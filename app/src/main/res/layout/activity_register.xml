@@ -8,48 +8,33 @@
     android:padding="24dp"
     android:background="@android:color/white">
 
-    <!-- Profile Info (Visible when logged in) -->
     <TextView
-        android:id="@+id/usernameTextView"
+        android:id="@+id/registerTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Username"
-        android:textSize="20sp"
+        android:text="Register"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:gravity="center"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone"/>
-
-    <TextView
-        android:id="@+id/emailTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Email"
-        android:textSize="16sp"
-        android:textColor="@android:color/black"
-        android:gravity="center"
-        android:layout_marginBottom="16dp"
-        android:visibility="gone"/>
-
-    <!-- Logout Button -->
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:backgroundTint="@color/purple_500"
-        android:textColor="@android:color/white"
-        android:visibility="gone"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Login Form (Visible when NOT logged in) -->
     <EditText
         android:id="@+id/usernameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter Username"
         android:inputType="text"
+        android:padding="12dp"
+        android:background="@android:drawable/editbox_background"
+        android:layout_marginBottom="12dp"/>
+
+    <EditText
+        android:id="@+id/emailEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Email"
+        android:inputType="textEmailAddress"
         android:padding="12dp"
         android:background="@android:drawable/editbox_background"
         android:layout_marginBottom="12dp"/>
@@ -64,40 +49,21 @@
         android:background="@android:drawable/editbox_background"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Login Button -->
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
+        android:text="Register"
         android:backgroundTint="@color/purple_500"
         android:textColor="@android:color/white"
         android:padding="12dp"
         android:textStyle="bold"/>
 
-    <Button
-        android:id="@+id/editProfileButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Edit Profile"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center" />
-
-    <Button
-        android:id="@+id/changePasswordButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Change Password"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="center" />
-
-
-    <!-- Sign Up Text (Redirects to Register) -->
     <TextView
-        android:id="@+id/signUpText"
+        android:id="@+id/loginRedirectText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Not a user yet? Sign up here"
+        android:text="Already have an account? Login"
         android:textSize="14sp"
         android:textColor="@android:color/black"
         android:gravity="center"

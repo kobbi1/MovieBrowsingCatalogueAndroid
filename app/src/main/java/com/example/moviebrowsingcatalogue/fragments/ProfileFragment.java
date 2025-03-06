@@ -8,77 +8,63 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.moviebrowsingcatalogue.R;
+import com.example.moviebrowsingcatalogue.activities.ChangePasswordActivity;
+import com.example.moviebrowsingcatalogue.activities.EditProfileActivity;
 import com.example.moviebrowsingcatalogue.activities.UserManagementActivity;
 
 public class ProfileFragment extends Fragment {
+
+    private TextView usernameTextView, emailTextView;
+    private Button logoutButton, editProfileButton, changePasswordButton;
+    private SharedPreferences prefs;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        // 🚀 Get username and email from SharedPreferences
-        SharedPreferences prefs = getActivity().getSharedPreferences("UserPrefs", getActivity().MODE_PRIVATE);
-        String username = prefs.getString("username", null);
-        String email = prefs.getString("email", null);
+        usernameTextView = view.findViewById(R.id.usernameTextView);
+        emailTextView = view.findViewById(R.id.emailTextView);
+        logoutButton = view.findViewById(R.id.logoutButton);
+        editProfileButton = view.findViewById(R.id.editProfileButton);
+        changePasswordButton = view.findViewById(R.id.changePasswordButton);
 
-        TextView usernameTextView = view.findViewById(R.id.usernameTextView);
-        TextView emailTextView = view.findViewById(R.id.emailTextView);
-        Button logoutButton = view.findViewById(R.id.logoutButton);
-        Button loginButton = view.findViewById(R.id.loginButton);
-        Button registerButton = view.findViewById(R.id.registerButton);
+        prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
+        String username = prefs.getString("username", "Guest");
+        String email = prefs.getString("email", "Not available");
 
-        if (username == null || email == null) {
-            // 🚀 No user is logged in → Show Login/Register buttons
-            usernameTextView.setText("No user logged in");
-            emailTextView.setVisibility(View.GONE);
-            logoutButton.setVisibility(View.GONE);
-            loginButton.setVisibility(View.VISIBLE);
-            registerButton.setVisibility(View.VISIBLE);
-        } else {
-            // 🚀 User is logged in → Show username, email, and logout button
-            usernameTextView.setText("Username: " + username);
-            emailTextView.setText("Email: " + email);
-            emailTextView.setVisibility(View.VISIBLE);
-            logoutButton.setVisibility(View.VISIBLE);
-            loginButton.setVisibility(View.GONE);
-            registerButton.setVisibility(View.GONE);
-        }
+        usernameTextView.setText("Username: " + username);
+        emailTextView.setText("Email: " + email);
 
-        // 🚀 Handle login button click
-        loginButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), UserManagementActivity.class);
+        logoutButton.setOnClickListener(v -> logoutUser());
+
+        editProfileButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), EditProfileActivity.class);
             startActivity(intent);
         });
 
-        // 🚀 Handle register button click (same activity for now)
-        registerButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), UserManagementActivity.class);
+        changePasswordButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
             startActivity(intent);
         });
-
-        // 🚀 Handle logout button click
-        logoutButton.setOnClickListener(v -> logout());
 
         return view;
     }
 
-    private void logout() {
-        // 🚀 Clear SharedPreferences
-        SharedPreferences prefs = getActivity().getSharedPreferences("UserPrefs", getActivity().MODE_PRIVATE);
+    private void logoutUser() {
         SharedPreferences.Editor editor = prefs.edit();
         editor.clear();
         editor.apply();
 
-        // 🚀 Refresh the fragment to show the login/register options
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new ProfileFragment())
-                .commit();
+        Intent intent = new Intent(getActivity(), UserManagementActivity.class);
+        startActivity(intent);
+        requireActivity().finish();
     }
 }

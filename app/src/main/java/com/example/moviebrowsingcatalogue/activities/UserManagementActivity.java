@@ -59,6 +59,7 @@ public class UserManagementActivity extends AppCompatActivity {
 
                         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
                         SharedPreferences.Editor editor = prefs.edit();
+                        editor.putLong("userId", loggedInUser.getId());
                         editor.putString("username", loggedInUser.getUsername());
                         editor.putString("email", email);
                         editor.apply();

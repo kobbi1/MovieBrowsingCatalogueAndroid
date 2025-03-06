@@ -3,16 +3,18 @@ package com.example.moviebrowsingcatalogue.services;
 import com.example.moviebrowsingcatalogue.core.Movie;
 import com.example.moviebrowsingcatalogue.core.User;
 import com.example.moviebrowsingcatalogue.core.AuthResponse;
-
+import com.example.moviebrowsingcatalogue.core.PasswordChangeRequest;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Body;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Header;
 import retrofit2.http.Field;
+import retrofit2.http.Path;
 
 public interface ApiService {
 
@@ -45,4 +47,17 @@ public interface ApiService {
             @Header("Authorization") String token,
             @Body User user
     );
+
+    @PUT("users/{id}/profile")
+    Call<AuthResponse> updateUserProfile(
+            @Path("id") Long id,
+            @Body User user
+    );
+
+    @PATCH("users/{id}/update-password")
+    Call<AuthResponse> updatePassword(
+            @Path("id") long userId,
+            @Body PasswordChangeRequest passwordChangeRequest
+    );
+
 }
