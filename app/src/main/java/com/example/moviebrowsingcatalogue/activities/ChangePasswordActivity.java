@@ -37,7 +37,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
         apiService = RetrofitClient.getClient().create(ApiService.class);
         prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        userId = prefs.getLong("userId", -1);
+        userId = getIntent().getLongExtra("userId", -1);
 
         changePasswordButton.setOnClickListener(v -> updatePassword());
     }
