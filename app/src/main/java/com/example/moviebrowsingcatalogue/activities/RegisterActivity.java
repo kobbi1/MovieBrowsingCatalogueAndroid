@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -70,17 +71,9 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    User user = response.body().getUser();
-
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString("username", user.getUsername());
-                    editor.putString("email", user.getEmail());
-                    editor.apply();
-
-                    Toast.makeText(RegisterActivity.this, "Signup Successful!", Toast.LENGTH_SHORT).show();
-
-                    startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
-                    finish();
+                    Toast.makeText(RegisterActivity.this, "Signup Successful! Please log in.", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(RegisterActivity.this, UserManagementActivity.class)); // Redirect to Login
+                    finish(); // Close RegisterActivity
                 } else {
                     Toast.makeText(RegisterActivity.this, "Signup Failed!", Toast.LENGTH_SHORT).show();
                 }

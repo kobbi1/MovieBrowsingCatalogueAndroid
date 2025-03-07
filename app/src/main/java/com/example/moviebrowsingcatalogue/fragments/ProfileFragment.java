@@ -17,14 +17,14 @@ import androidx.fragment.app.Fragment;
 import com.example.moviebrowsingcatalogue.R;
 import com.example.moviebrowsingcatalogue.activities.ChangePasswordActivity;
 import com.example.moviebrowsingcatalogue.activities.EditProfileActivity;
+import com.example.moviebrowsingcatalogue.activities.RegisterActivity;
 import com.example.moviebrowsingcatalogue.activities.UserManagementActivity;
 
 public class ProfileFragment extends Fragment {
 
-    private TextView usernameTextView, emailTextView;
-    private Button logoutButton, editProfileButton, changePasswordButton;
+    private TextView usernameTextView, emailTextView, signUpTextView;
+    private Button logoutButton, editProfileButton, loginButton;
     private SharedPreferences prefs;
-    private long userId;
 
     @Nullable
     @Override
@@ -35,28 +35,51 @@ public class ProfileFragment extends Fragment {
         emailTextView = view.findViewById(R.id.emailTextView);
         logoutButton = view.findViewById(R.id.logoutButton);
         editProfileButton = view.findViewById(R.id.editProfileButton);
-        changePasswordButton = view.findViewById(R.id.changePasswordButton);
+        loginButton = view.findViewById(R.id.loginButton);
+        signUpTextView = view.findViewById(R.id.signUpTextView);
 
         prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
-        userId = prefs.getLong("userId", -1);
+        String username = prefs.getString("username", null);
+        String email = prefs.getString("email", null);
 
-        String username = prefs.getString("username", "Guest");
-        String email = prefs.getString("email", "Not available");
+        // If not logged in, show Login & SignUp, Hide Edit Profile & Logout
+        if (username == null) {
+            usernameTextView.setVisibility(View.GONE);
+            emailTextView.setVisibility(View.GONE);
+            logoutButton.setVisibility(View.GONE);
+            editProfileButton.setVisibility(View.GONE);
 
-        usernameTextView.setText("Username: " + username);
-        emailTextView.setText("Email: " + email);
+            loginButton.setVisibility(View.VISIBLE);
+            signUpTextView.setVisibility(View.VISIBLE);
+        } else {
+            // If logged in, show everything but hide Login & SignUp
+            usernameTextView.setText("Username: " + username);
+            emailTextView.setText("Email: " + email);
+
+            usernameTextView.setVisibility(View.VISIBLE);
+            emailTextView.setVisibility(View.VISIBLE);
+            logoutButton.setVisibility(View.VISIBLE);
+            editProfileButton.setVisibility(View.VISIBLE);
+
+            loginButton.setVisibility(View.GONE);
+            signUpTextView.setVisibility(View.GONE);
+        }
+
+        loginButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), UserManagementActivity.class);
+            startActivity(intent);
+        });
+
+        signUpTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), RegisterActivity.class);
+            startActivity(intent);
+        });
 
         logoutButton.setOnClickListener(v -> logoutUser());
 
         editProfileButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-            intent.putExtra("userId", userId);
-            startActivity(intent);
-        });
-
-        changePasswordButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
-            intent.putExtra("userId", userId);
+            intent.putExtra("userId", prefs.getLong("userId", -1));
             startActivity(intent);
         });
 
