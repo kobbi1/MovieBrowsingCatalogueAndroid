@@ -73,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     Toast.makeText(RegisterActivity.this, "Signup Successful! Please log in.", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(RegisterActivity.this, UserManagementActivity.class)); // Redirect to Login
-                    finish(); // Close RegisterActivity
+                    finish();
                 } else {
                     Toast.makeText(RegisterActivity.this, "Signup Failed!", Toast.LENGTH_SHORT).show();
                 }
