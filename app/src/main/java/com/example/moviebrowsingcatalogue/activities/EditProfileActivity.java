@@ -1,5 +1,6 @@
 package com.example.moviebrowsingcatalogue.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,7 +16,7 @@ import com.example.moviebrowsingcatalogue.RetrofitClient;
 import com.example.moviebrowsingcatalogue.core.AuthResponse;
 import com.example.moviebrowsingcatalogue.core.User;
 import com.example.moviebrowsingcatalogue.services.ApiService;
-
+import com.example.moviebrowsingcatalogue.activities.ProfileActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,38 +29,50 @@ public class EditProfileActivity extends AppCompatActivity {
     private Long userId;
     private SharedPreferences prefs;
 
+    private Button changePasswordButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
         usernameEditText = findViewById(R.id.usernameEditText);
-        emailEditText = findViewById(R.id.emailEditText);
-        saveButton = findViewById(R.id.saveButton);
+        /*emailEditText = findViewById(R.id.emailEditText);*/
+        changePasswordButton = findViewById(R.id.changePasswordButton);
 
         apiService = RetrofitClient.getClient().create(ApiService.class);
         prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
 
         userId = getIntent().getLongExtra("userId", -1);
         String username = prefs.getString("username", "");
-        String email = prefs.getString("email", "");
+        /*String email = prefs.getString("email", "");*/
 
         usernameEditText.setText(username);
-        emailEditText.setText(email);
-
+        /*emailEditText.setText(email);*/
+        saveButton = findViewById(R.id.saveButton);
         saveButton.setOnClickListener(v -> updateUserProfile());
+
+        changePasswordButton.setOnClickListener(v -> {
+            Intent intent = new Intent(EditProfileActivity.this, ChangePasswordActivity.class);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
+
+        saveButton.setOnClickListener(v -> {
+            finish();
+        });
     }
 
     private void updateUserProfile() {
         String newUsername = usernameEditText.getText().toString().trim();
-        String newEmail = emailEditText.getText().toString().trim();
+        /*String newEmail = emailEditText.getText().toString().trim();*/
 
-        if (TextUtils.isEmpty(newUsername) || TextUtils.isEmpty(newEmail)) {
+        if (TextUtils.isEmpty(newUsername) /*|| TextUtils.isEmpty(newEmail)*/) {
             Toast.makeText(this, "Please enter all details", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        User updatedUser = new User(newUsername, newEmail);
+        User updatedUser = new User(newUsername, newUsername);
 
         apiService.updateUserProfile(userId, updatedUser).enqueue(new Callback<AuthResponse>() {
             @Override
@@ -69,7 +82,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("username", newUsername);
-                    editor.putString("email", newEmail);
+                    /*editor.putString("email", newEmail);*/
                     editor.apply();
 
                     finish();

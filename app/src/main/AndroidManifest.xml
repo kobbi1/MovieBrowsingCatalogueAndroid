@@ -56,21 +56,18 @@
             android:exported="true"
             android:label="Profile"
             android:theme="@style/Theme.MovieBrowsingCatalogue"/>
-        <!-- Genres Activity -->
         <activity
-            android:name=".activities.GenresActivity"
+            android:name=".activities.EditProfileActivity"
             android:exported="true"
             android:label="Profile"
             android:theme="@style/Theme.MovieBrowsingCatalogue"/>
-        <!-- Movies By Genre Activity -->
         <activity
-            android:name=".activities.MoviesByGenreActivity"
+            android:name=".activities.ChangePasswordActivity"
             android:exported="true"
             android:label="Profile"
             android:theme="@style/Theme.MovieBrowsingCatalogue"/>
-        <!-- Settings Activity -->
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name=".activities.RegisterActivity"
             android:exported="true"
             android:label="Profile"
             android:theme="@style/Theme.MovieBrowsingCatalogue"/>
