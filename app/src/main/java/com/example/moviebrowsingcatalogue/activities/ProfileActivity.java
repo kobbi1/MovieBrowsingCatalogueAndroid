@@ -12,7 +12,17 @@ public class ProfileActivity extends NavigationActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         setupNavigation(R.id.nav_profile, "Profile");
-        loadFragment(new ProfileFragment());
+
+        String username = getIntent().getStringExtra("username");
+        String email = getIntent().getStringExtra("email");
+
+        ProfileFragment profileFragment = new ProfileFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("username", username);
+        bundle.putString("email", email);
+        profileFragment.setArguments(bundle);
+
+        loadFragment(profileFragment);
     }
 
     private void loadFragment(Fragment fragment) {
