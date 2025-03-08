@@ -59,24 +59,45 @@
         <!-- Genres Activity -->
         <activity
             android:name=".activities.GenresActivity"
+            android:exported="true"
+            android:label="Genres"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+
+        <!-- Edit Profile Activity -->
+        <activity
             android:name=".activities.EditProfileActivity"
             android:exported="true"
-            android:label="Profile"
+            android:label="Edit Profile"
             android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+
         <!-- Movies By Genre Activity -->
         <activity
             android:name=".activities.MoviesByGenreActivity"
+            android:exported="true"
+            android:label="Movies by Genre"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+
+        <!-- Change Password Activity -->
+        <activity
             android:name=".activities.ChangePasswordActivity"
             android:exported="true"
-            android:label="Profile"
+            android:label="Change Password"
             android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+
         <!-- Settings Activity -->
         <activity
             android:name=".activities.SettingsActivity"
+            android:exported="true"
+            android:label="Settings"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+
+        <!-- Register Activity -->
+        <activity
             android:name=".activities.RegisterActivity"
             android:exported="true"
-            android:label="Profile"
+            android:label="Register"
             android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+
 
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
