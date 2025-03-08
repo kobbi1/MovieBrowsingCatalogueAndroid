@@ -34,7 +34,7 @@ public interface ApiService {
     Call<List<Movie>> getMoviesBySpecificCategory(@Path("category") String category);
     @GET("tvshows/categories/{category}")
     Call<List<Movie>> getTvShowsBySpecificCategory(@Path("category") String category);
-}
+
 
 
     // User Auth
