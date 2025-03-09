@@ -1,0 +1,34 @@
+<!-- item_review.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Review Text -->
+    <TextView
+        android:id="@+id/reviewText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Review text here"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Review Username -->
+    <TextView
+        android:id="@+id/reviewUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp"/>
+
+    <!-- Review Rating -->
+    <TextView
+        android:id="@+id/reviewRating"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rating: 5"
+    android:textSize="14sp"/>
+</LinearLayout>
+
