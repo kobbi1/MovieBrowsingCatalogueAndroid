@@ -40,6 +40,7 @@ public interface ApiService {
     Call<List<Movie>> getTvShowsBySpecificCategory(@Path("category") String category);
 
 
+
     // User Auth
     @POST("users/login")
     Call<AuthResponse> loginUser(
