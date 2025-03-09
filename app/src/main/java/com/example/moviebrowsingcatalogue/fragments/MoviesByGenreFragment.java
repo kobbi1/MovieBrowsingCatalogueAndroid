@@ -17,14 +17,20 @@ import com.example.moviebrowsingcatalogue.R;
 import com.example.moviebrowsingcatalogue.RetrofitClient;
 import com.example.moviebrowsingcatalogue.core.Movie;
 import com.example.moviebrowsingcatalogue.services.ApiService;
+import java.util.ArrayList;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.moviebrowsingcatalogue.adapters.MoviesAdapter;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MoviesByGenreFragment extends Fragment {
+public class MoviesByGenreFragment extends Fragment implements MoviesAdapter.MoviesClickListener {
 
-    private LinearLayout moviesContainer;
+    private RecyclerView recyclerView;
+    private MoviesAdapter movieAdapter;
+    private List<Movie> movies = new ArrayList<>();
     private String genre;
     private String type;
     private ApiService apiService;
@@ -33,7 +39,12 @@ public class MoviesByGenreFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
-        moviesContainer = view.findViewById(R.id.moviesContainer);
+        recyclerView = view.findViewById(R.id.recyclerView);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));  // LinearLayoutManager for vertical scrolling
+
+        movieAdapter = new MoviesAdapter(movies, this);
+        recyclerView.setAdapter(movieAdapter);
         apiService = RetrofitClient.getClient().create(ApiService.class);
 
         if (getArguments() != null) {
@@ -63,7 +74,9 @@ public class MoviesByGenreFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    displayMovies(response.body());
+                    movies.clear();  // Clear any previous data
+                    movies.addAll(response.body());  // Add new movies
+                    movieAdapter.notifyDataSetChanged();
                 } else {
                     showToast("API Error: " + response.code());
                     Log.e("MoviesByGenreFragment", "API Error: " + response.code() + " - " + response.message());
@@ -78,28 +91,21 @@ public class MoviesByGenreFragment extends Fragment {
         });
     }
 
-    private void displayMovies(List<Movie> movies) {
-        moviesContainer.removeAllViews();
-
-        for (Movie movie : movies) {
-            View movieView = LayoutInflater.from(getContext()).inflate(R.layout.item_movie_dynamic, moviesContainer, false);
-
-            TextView titleTextView = movieView.findViewById(R.id.titleTextView);
-            TextView genreTextView = movieView.findViewById(R.id.genreTextView);
-            TextView directorTextView = movieView.findViewById(R.id.directorTextView);
-            ImageView coverImageView = movieView.findViewById(R.id.coverImageView);
-
-            titleTextView.setText(movie.getTitle());
-            genreTextView.setText("Genre: " + movie.getGenre());
-            directorTextView.setText("Director: " + movie.getDirector());
-
-            Glide.with(this)
-                    .load(movie.getCoverImage())
-                    .into(coverImageView);
-
-            moviesContainer.addView(movieView);
-        }
+    @Override
+    public void onMovieClick(Movie movie) {
+        // When a movie is clicked, open its details page
+        openMovieDetail(movie);  // Assuming openMovieDetail() is implemented to handle movie click
     }
+
+    private void openMovieDetail(Movie movie) {
+        MoviesDetailFragment movieDetailsFragment = MoviesDetailFragment.newInstance(movie.getId());
+
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, movieDetailsFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
 
     private void showToast(String message) {
         if (getContext() != null) {

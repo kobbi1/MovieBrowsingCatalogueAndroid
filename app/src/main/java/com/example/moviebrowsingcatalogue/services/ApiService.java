@@ -1,6 +1,7 @@
 package com.example.moviebrowsingcatalogue.services;
 
 import com.example.moviebrowsingcatalogue.core.Movie;
+import com.example.moviebrowsingcatalogue.core.MovieDetailResponse;
 import com.example.moviebrowsingcatalogue.core.User;
 import com.example.moviebrowsingcatalogue.core.AuthResponse;
 import com.example.moviebrowsingcatalogue.core.PasswordChangeRequest;
@@ -20,6 +21,8 @@ import retrofit2.http.Header;
 import retrofit2.http.Field;
 import retrofit2.http.Path;
 
+import com.example.moviebrowsingcatalogue.core.Review;
+
 public interface ApiService {
 
     @GET("movies")
@@ -38,6 +41,17 @@ public interface ApiService {
     Call<List<Movie>> getMoviesBySpecificCategory(@Path("category") String category);
     @GET("tvshows/categories/{category}")
     Call<List<Movie>> getTvShowsBySpecificCategory(@Path("category") String category);
+
+    @GET("movies/{id}")
+    Call<MovieDetailResponse> getMovieDetails(@Path("id") long id);
+
+    @GET("tvshows/{id}")
+    Call<Movie> getTvShowById(@Path("id") long id);
+
+
+    @GET("reviews/movie/{id}")
+    Call<List<Review>> getMovieReviews(@Path("id") long id);
+
 
 
 
