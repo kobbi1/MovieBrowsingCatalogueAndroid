@@ -65,6 +65,13 @@ public class UserManagementActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putLong("userId", loggedInUser.getId());
                         editor.putString("username", loggedInUser.getUsername());
+
+                        String sessionId = response.headers().get("Set-Cookie");
+                        if (sessionId != null) {
+                            editor.putString("sessionId", sessionId);
+                        } else {
+                            System.out.println("No Session ID found in response headers!");
+                        }
                         editor.apply();
 
                         Toast.makeText(UserManagementActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
