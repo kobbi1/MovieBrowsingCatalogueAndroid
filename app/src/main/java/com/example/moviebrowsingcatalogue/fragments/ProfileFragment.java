@@ -19,11 +19,13 @@ import com.example.moviebrowsingcatalogue.activities.ChangePasswordActivity;
 import com.example.moviebrowsingcatalogue.activities.EditProfileActivity;
 import com.example.moviebrowsingcatalogue.activities.RegisterActivity;
 import com.example.moviebrowsingcatalogue.activities.UserManagementActivity;
+import com.example.moviebrowsingcatalogue.activities.CreateWatchlistActivity;
+
 
 public class ProfileFragment extends Fragment {
 
     private TextView usernameTextView, emailTextView, signUpTextView;
-    private Button logoutButton, editProfileButton, loginButton;
+    private Button logoutButton, editProfileButton, loginButton ,createWatchlistButton;
     private SharedPreferences prefs;
 
     @Nullable
@@ -37,10 +39,13 @@ public class ProfileFragment extends Fragment {
         editProfileButton = view.findViewById(R.id.editProfileButton);
         loginButton = view.findViewById(R.id.loginButton);
         signUpTextView = view.findViewById(R.id.signUpTextView);
+        createWatchlistButton = view.findViewById(R.id.createWatchlistButton); // New Button
+
 
         prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
         String username = prefs.getString("username", null);
         String email = prefs.getString("email", null);
+
 
         // If not logged in, show Login & SignUp, Hide Edit Profile & Logout
         if (username == null) {
@@ -60,6 +65,8 @@ public class ProfileFragment extends Fragment {
             emailTextView.setVisibility(View.VISIBLE);
             logoutButton.setVisibility(View.VISIBLE);
             editProfileButton.setVisibility(View.VISIBLE);
+            createWatchlistButton.setVisibility(View.VISIBLE); // Show button for logged-in users
+
 
             loginButton.setVisibility(View.GONE);
             signUpTextView.setVisibility(View.GONE);
@@ -81,6 +88,12 @@ public class ProfileFragment extends Fragment {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
             intent.putExtra("userId", prefs.getLong("userId", -1));
             startActivity(intent);
+        });
+        createWatchlistButton.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new CreateWatchlistFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
         return view;

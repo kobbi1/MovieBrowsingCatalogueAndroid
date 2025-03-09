@@ -14,6 +14,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="30">
 
+        <activity android:name=".activities.CreateWatchlistActivity" />
+
+
 
         <!-- Home Activity (Launcher) -->
         <activity

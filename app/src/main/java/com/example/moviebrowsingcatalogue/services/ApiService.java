@@ -4,7 +4,11 @@ import com.example.moviebrowsingcatalogue.core.Movie;
 import com.example.moviebrowsingcatalogue.core.User;
 import com.example.moviebrowsingcatalogue.core.AuthResponse;
 import com.example.moviebrowsingcatalogue.core.PasswordChangeRequest;
+import com.example.moviebrowsingcatalogue.core.Watchlist;
+
 import java.util.List;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Body;
@@ -26,6 +30,14 @@ public interface ApiService {
 
     @GET("movies/top-movies")
     Call<List<Movie>> getTopMovies();
+    @GET("movies/categories")
+    Call<List<String>> getMovieCategories();
+    @GET("tvshows/categories")
+    Call<List<String>> getTvShowCategories();
+    @GET("movies/categories/{category}")
+    Call<List<Movie>> getMoviesBySpecificCategory(@Path("category") String category);
+    @GET("tvshows/categories/{category}")
+    Call<List<Movie>> getTvShowsBySpecificCategory(@Path("category") String category);
 
 
     // User Auth
@@ -38,6 +50,8 @@ public interface ApiService {
     Call<AuthResponse> signupUser(
             @Body User user
     );
+    @POST("watchlists/create")
+    Call<Map<String, Object>> createWatchlist(@Body Watchlist watchlist, @Header("Cookie") String sessionId);
 
     @GET("user/profile")
     Call<User> getUserProfile(@Header("Authorization") String token);
