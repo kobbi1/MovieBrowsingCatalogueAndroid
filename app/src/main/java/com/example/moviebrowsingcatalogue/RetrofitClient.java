@@ -18,5 +18,15 @@ public class RetrofitClient {
         return retrofit;
     }
 
+    public static Retrofit getInstance() {
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create()) // Use Gson for JSON parsing
+                    .build();
+        }
+        return retrofit;
+    }
+
 
 }
