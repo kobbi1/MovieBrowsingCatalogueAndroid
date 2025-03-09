@@ -51,4 +51,10 @@
         android:layout_height="wrap_content"
         android:text="Logout"
         android:visibility="gone"/>
+    <Button
+        android:id="@+id/createWatchlistButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Watchlist"
+        android:visibility="gone"/>
 </LinearLayout>

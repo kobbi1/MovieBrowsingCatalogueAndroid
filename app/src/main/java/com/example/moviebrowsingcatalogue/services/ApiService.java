@@ -4,7 +4,11 @@ import com.example.moviebrowsingcatalogue.core.Movie;
 import com.example.moviebrowsingcatalogue.core.User;
 import com.example.moviebrowsingcatalogue.core.AuthResponse;
 import com.example.moviebrowsingcatalogue.core.PasswordChangeRequest;
+import com.example.moviebrowsingcatalogue.core.Watchlist;
+
 import java.util.List;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Body;
@@ -47,6 +51,11 @@ public interface ApiService {
     Call<AuthResponse> signupUser(
             @Body User user
     );
+
+    @GET("watchlists")
+    Call<List<Watchlist>> getWatchlists();
+    @POST("watchlists/create")
+    Call<Map<String, Object>> createWatchlist(@Body Watchlist watchlist, @Header("Cookie") String sessionId);
 
     @GET("user/profile")
     Call<User> getUserProfile(@Header("Authorization") String token);
