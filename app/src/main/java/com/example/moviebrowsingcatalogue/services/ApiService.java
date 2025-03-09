@@ -50,6 +50,9 @@ public interface ApiService {
     Call<AuthResponse> signupUser(
             @Body User user
     );
+
+    @GET("watchlists")
+    Call<List<Watchlist>> getWatchlists();
     @POST("watchlists/create")
     Call<Map<String, Object>> createWatchlist(@Body Watchlist watchlist, @Header("Cookie") String sessionId);
 

@@ -74,6 +74,11 @@
             android:exported="true"
             android:label="Profile"
             android:theme="@style/Theme.MovieBrowsingCatalogue"/>
+        <activity
+            android:name=".activities.WatchlistActivity"
+            android:exported="true"
+            android:label="Profile"
+            android:theme="@style/Theme.MovieBrowsingCatalogue"/>
 
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
