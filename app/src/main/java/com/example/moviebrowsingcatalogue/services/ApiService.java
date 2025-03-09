@@ -17,6 +17,8 @@ import retrofit2.http.Header;
 import retrofit2.http.Field;
 import retrofit2.http.Path;
 
+import com.example.moviebrowsingcatalogue.core.Review;
+
 public interface ApiService {
 
     @GET("movies")
@@ -41,6 +43,10 @@ public interface ApiService {
 
     @GET("tvshows/{id}")
     Call<Movie> getTvShowById(@Path("id") long id);
+
+
+    @GET("reviews/movie/{id}")
+    Call<List<Review>> getMovieReviews(@Path("id") long id);
 
 
 

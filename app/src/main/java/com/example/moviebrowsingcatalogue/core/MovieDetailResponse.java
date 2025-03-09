@@ -3,9 +3,8 @@ package com.example.moviebrowsingcatalogue.core;
 import java.util.List;
 
 public class MovieDetailResponse {
-
-    private Movie movie;    // The movie object
-    private List<Actor> actors;  // The list of actors
+    private Movie movie;
+    private double averageRating;
 
     public Movie getMovie() {
         return movie;
@@ -15,17 +14,12 @@ public class MovieDetailResponse {
         this.movie = movie;
     }
 
-    public List<Actor> getActors() {
-        return actors;
+    public double getAverageRating() {
+        return averageRating;
     }
 
-
-
-    public void setActors(List<Actor> actors) {
-        this.actors = actors;
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
     }
-
-
-
-
 }
+

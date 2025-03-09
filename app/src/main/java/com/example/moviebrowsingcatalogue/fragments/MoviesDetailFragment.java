@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.moviebrowsingcatalogue.R;
@@ -33,6 +35,13 @@ import retrofit2.Response;
 
 import android.widget.Toast;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import com.example.moviebrowsingcatalogue.adapters.ReviewsAdapter;
+import com.example.moviebrowsingcatalogue.core.Review;
+
+
 
 public class MoviesDetailFragment extends Fragment {
 
@@ -44,6 +53,11 @@ public class MoviesDetailFragment extends Fragment {
     private ImageView moviePoster;
     private TextView movieTitle, movieDescription, movieDirector, movieReleaseYear, movieGenre, movieAverageRating;
     private TextView movieActors; // TextView to display the list of actors
+
+
+    private RecyclerView reviewsRecyclerView;
+    private ReviewsAdapter reviewsAdapter;
+    private List<Review> reviews = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +81,15 @@ public class MoviesDetailFragment extends Fragment {
         movieAverageRating = rootView.findViewById(R.id.averageRating);
         moviePoster = rootView.findViewById(R.id.movieCoverImage);
 
-        fetchMovieDetails();  // Fetch the movie details using the movie ID
+        reviewsRecyclerView = rootView.findViewById(R.id.reviewsRecyclerView);
+        reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        reviewsAdapter = new ReviewsAdapter(reviews);
+        reviewsRecyclerView.setAdapter(reviewsAdapter);
+
+        if (movieId > 0) {  // Ensure valid movie ID before fetching
+            fetchMovieDetails();
+            fetchMovieReviews();
+        }
 
         return rootView;
     }
@@ -86,8 +108,19 @@ public class MoviesDetailFragment extends Fragment {
                     MovieDetailResponse movieDetailResponse = response.body();
                     movie = movieDetailResponse.getMovie();  // Extract the movie object with detailed information
 
+                    // If the average rating is inside MovieDetailResponse, set it directly
+                    if (movieDetailResponse.getAverageRating() != 0) {
+                        BigDecimal avg = new BigDecimal(String.valueOf(movieDetailResponse.getAverageRating())).setScale(1, BigDecimal.ROUND_FLOOR);
+                        movieAverageRating.setText("Average Rating: " + avg );
+                    } else {
+                        System.out.println("nei");
+                        movieAverageRating.setText("Average Rating: N/A");
+                    }
+
                     // Update the UI with the movie details
-                    updateUI(movie);
+
+
+                    updateUIMovie(movie);
                 } else {
                     // Handle API error (e.g., no data found)
                     showToast("Failed to load movie details.");
@@ -102,7 +135,32 @@ public class MoviesDetailFragment extends Fragment {
         });
     }
 
-    private void updateUI(Movie movie) {
+
+    private void fetchMovieReviews() {
+        ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+
+        Call<List<Review>> call = apiService.getMovieReviews(movieId);
+
+        call.enqueue(new Callback<List<Review>>() {
+            @Override
+            public void onResponse(Call<List<Review>> call, Response<List<Review>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    reviews.clear();
+                    reviews.addAll(response.body());  // Ensure you are adding reviews to the list
+                    updateUIReview(reviews);
+                } else {
+                    Log.e("MoviesDetailFragment", "Failed to fetch reviews: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Review>> call, Throwable t) {
+                Log.e("MoviesDetailFragment", "Error fetching reviews", t);
+            }
+        });
+    }
+
+    private void updateUIMovie(Movie movie) {
         // Populate UI with the fetched movie details
         if (movie != null) {
             movieTitle.setText(movie.getTitle());
@@ -110,7 +168,6 @@ public class MoviesDetailFragment extends Fragment {
             movieDirector.setText("Director: " + movie.getDirector());
             movieReleaseYear.setText("Release Year: " + movie.getReleaseYear());
             movieGenre.setText("Genre: " + movie.getGenre());
-            movieAverageRating.setText("Average Rating: " + movie.getAverageRating());
 
             // Load poster image
             Glide.with(getContext()).load(movie.getCoverImage()).into(moviePoster);
@@ -130,6 +187,17 @@ public class MoviesDetailFragment extends Fragment {
 
                 actorsContainer.addView(actorView);  // Add the actor view to the container
             }
+        }
+    }
+
+    private void updateUIReview(List<Review> reviews) {
+        // Check if reviews are available
+        if (reviews != null && !reviews.isEmpty()) {
+            // Clear existing reviews (if any)
+            reviewsAdapter.setReviews(reviews);  // Assuming you have a method to update the list in your adapter
+            reviewsAdapter.notifyDataSetChanged();
+        } else {
+            showToast("No reviews available for this movie.");
         }
     }
 
