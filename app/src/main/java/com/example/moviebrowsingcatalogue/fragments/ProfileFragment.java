@@ -25,7 +25,7 @@ import com.example.moviebrowsingcatalogue.activities.CreateWatchlistActivity;
 public class ProfileFragment extends Fragment {
 
     private TextView usernameTextView, emailTextView, signUpTextView;
-    private Button logoutButton, editProfileButton, loginButton ,createWatchlistButton;
+    private Button logoutButton, editProfileButton, loginButton ,createWatchlistButton,  myWatchlistsButton;
     private SharedPreferences prefs;
 
     @Nullable
@@ -40,6 +40,7 @@ public class ProfileFragment extends Fragment {
         loginButton = view.findViewById(R.id.loginButton);
         signUpTextView = view.findViewById(R.id.signUpTextView);
         createWatchlistButton = view.findViewById(R.id.createWatchlistButton); // New Button
+        myWatchlistsButton = view.findViewById(R.id.myWatchlistsButton);
 
 
         prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
@@ -53,9 +54,13 @@ public class ProfileFragment extends Fragment {
             emailTextView.setVisibility(View.GONE);
             logoutButton.setVisibility(View.GONE);
             editProfileButton.setVisibility(View.GONE);
+            myWatchlistsButton.setVisibility(View.GONE);
+            createWatchlistButton.setVisibility(View.GONE);
 
             loginButton.setVisibility(View.VISIBLE);
             signUpTextView.setVisibility(View.VISIBLE);
+
+
         } else {
             // If logged in, show everything but hide Login & SignUp
             usernameTextView.setText("Username: " + username);
@@ -66,6 +71,8 @@ public class ProfileFragment extends Fragment {
             logoutButton.setVisibility(View.VISIBLE);
             editProfileButton.setVisibility(View.VISIBLE);
             createWatchlistButton.setVisibility(View.VISIBLE); // Show button for logged-in users
+            myWatchlistsButton.setVisibility(View.VISIBLE);
+
 
 
             loginButton.setVisibility(View.GONE);
@@ -95,6 +102,14 @@ public class ProfileFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+
+        myWatchlistsButton.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new MyWatchlistsFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
 
         return view;
     }

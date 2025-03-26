@@ -5,6 +5,7 @@ import com.example.moviebrowsingcatalogue.core.MovieDetailResponse;
 import com.example.moviebrowsingcatalogue.core.User;
 import com.example.moviebrowsingcatalogue.core.AuthResponse;
 import com.example.moviebrowsingcatalogue.core.PasswordChangeRequest;
+import com.example.moviebrowsingcatalogue.core.UserWatchlist;
 import com.example.moviebrowsingcatalogue.core.Watchlist;
 
 import java.util.List;
@@ -91,5 +92,10 @@ public interface ApiService {
             @Path("id") long userId,
             @Body PasswordChangeRequest passwordChangeRequest
     );
+
+    @GET("/watchlists/user/{userId}")
+    Call<UserWatchlist> getUserWatchlists(@Path("userId") long userId);
+
+
 
 }
