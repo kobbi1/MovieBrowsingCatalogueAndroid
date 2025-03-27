@@ -95,7 +95,6 @@ public class MyWatchlistsFragment extends Fragment {
                         deleteBtn.setTextSize(14f);
                         deleteBtn.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.delete)); // or R.color.secondary
                         deleteBtn.setTextColor(Color.WHITE);
-                        deleteBtn.set
                         deleteBtn.setOnClickListener(v -> deleteWatchlist(watchlist, row));
 
                         // Add views to row
