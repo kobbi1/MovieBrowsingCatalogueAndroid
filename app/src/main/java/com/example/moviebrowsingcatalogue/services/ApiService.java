@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Body;
 import retrofit2.http.FormUrlEncoded;
@@ -105,6 +106,10 @@ public interface ApiService {
 
     @GET("users/{id}")
     Call<User> getUserById(@Path("id") long id);
+
+    @DELETE("watchlists/delete/{watchlistId}/user/{userId}")
+    Call<Void> deleteWatchlist(@Path("watchlistId") long watchlistId, @Path("userId") long userId);
+
 
 
 

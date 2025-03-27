@@ -1,17 +1,20 @@
 package com.example.moviebrowsingcatalogue.fragments;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.room.Room;
 
@@ -71,16 +74,36 @@ public class MyWatchlistsFragment extends Fragment {
                     List<Watchlist> watchlists = response.body().getUserWatchlists();
 
                     for (Watchlist watchlist : watchlists) {
-                        TextView watchlistText = new TextView(getActivity());
-                        watchlistText.setText("• " + watchlist.getName());
-                        watchlistText.setTextSize(18f);
-                        watchlistText.setPadding(0, 8, 0, 8);
-                        watchlistText.setGravity(Gravity.START);
+                        // Row container
+                        LinearLayout row = new LinearLayout(getActivity());
+                        row.setOrientation(LinearLayout.HORIZONTAL);
+                        row.setPadding(0, 16, 0, 16);
+                        row.setLayoutParams(new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT
+                        ));
 
-                        watchlistsContainer.addView(watchlistText);
+                        // Watchlist name
+                        TextView nameView = new TextView(getActivity());
+                        nameView.setText(watchlist.getName());
+                        nameView.setTextSize(18f);
+                        nameView.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
 
+                        // Delete button
+                        Button deleteBtn = new Button(getActivity());
+                        deleteBtn.setText("Delete");
+                        deleteBtn.setTextSize(14f);
+                        deleteBtn.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.delete)); // or R.color.secondary
+                        deleteBtn.setTextColor(Color.WHITE);
+                        deleteBtn.set
+                        deleteBtn.setOnClickListener(v -> deleteWatchlist(watchlist, row));
 
-                        saveToLocalDatabase(watchlists, userId);
+                        // Add views to row
+                        row.addView(nameView);
+                        row.addView(deleteBtn);
+
+                        // Add row to container
+                        watchlistsContainer.addView(row);
                     }
 
                     if (watchlists.isEmpty()) {
@@ -150,6 +173,36 @@ public class MyWatchlistsFragment extends Fragment {
             db.watchlistStorage().insertWatchlistItems(joinItems);
         }).start();
     }
+
+    private void deleteWatchlist(Watchlist watchlist, View rowView) {
+        long userId = prefs.getLong("userId", -1);
+        long watchlistId = watchlist.getId();
+
+        if (userId == -1) {
+            Toast.makeText(getActivity(), "User ID missing. Please login.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Call<Void> call = apiService.deleteWatchlist(watchlistId, userId);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getActivity(), "Deleted \"" + watchlist.getName() + "\"", Toast.LENGTH_SHORT).show();
+                    watchlistsContainer.removeView(rowView);
+                } else {
+                    Toast.makeText(getActivity(), "Failed to delete: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 
 
 }

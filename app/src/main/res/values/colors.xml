@@ -5,4 +5,6 @@
     <color name="nav_item_color">#33333333</color>
     <color name="purple_500">#6200EE</color>
     <color name="teal_700">#018786</color>
+    <color name="delete">#A10000</color>
+    <color name="error">#FF0000</color>
     </resources>
