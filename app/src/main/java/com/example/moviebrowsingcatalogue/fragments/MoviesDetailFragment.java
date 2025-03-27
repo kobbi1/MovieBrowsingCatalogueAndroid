@@ -1,12 +1,16 @@
 package com.example.moviebrowsingcatalogue.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.example.moviebrowsingcatalogue.R;
 import com.example.moviebrowsingcatalogue.RetrofitClient;
 import com.example.moviebrowsingcatalogue.core.Movie;
+import com.example.moviebrowsingcatalogue.core.ReviewRequest;
+import com.example.moviebrowsingcatalogue.core.User;
 import com.example.moviebrowsingcatalogue.services.ApiService;
 import com.example.moviebrowsingcatalogue.core.MovieDetailResponse;
 import com.example.moviebrowsingcatalogue.core.Actor;
@@ -41,6 +47,11 @@ import java.util.List;
 import com.example.moviebrowsingcatalogue.adapters.ReviewsAdapter;
 import com.example.moviebrowsingcatalogue.core.Review;
 
+import okhttp3.ResponseBody;
+
+
+
+
 
 
 public class MoviesDetailFragment extends Fragment {
@@ -54,10 +65,18 @@ public class MoviesDetailFragment extends Fragment {
     private TextView movieTitle, movieDescription, movieDirector, movieReleaseYear, movieGenre, movieAverageRating;
     private TextView movieActors; // TextView to display the list of actors
 
+    private EditText editReviewText;
+    private RatingBar ratingBar;
+    private Button btnSubmitReview;
+
+    private SharedPreferences prefs;
+
 
     private RecyclerView reviewsRecyclerView;
     private ReviewsAdapter reviewsAdapter;
     private List<Review> reviews = new ArrayList<>();
+
+    private User user;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +99,12 @@ public class MoviesDetailFragment extends Fragment {
         movieGenre = rootView.findViewById(R.id.movieGenre);
         movieAverageRating = rootView.findViewById(R.id.averageRating);
         moviePoster = rootView.findViewById(R.id.movieCoverImage);
+
+        editReviewText = rootView.findViewById(R.id.editReviewText);
+        ratingBar = rootView.findViewById(R.id.ratingBar);
+        btnSubmitReview = rootView.findViewById(R.id.btnSubmitReview);
+
+        btnSubmitReview.setOnClickListener(v -> submitReview());
 
         reviewsRecyclerView = rootView.findViewById(R.id.reviewsRecyclerView);
         reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -147,7 +172,9 @@ public class MoviesDetailFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     reviews.clear();
                     reviews.addAll(response.body());  // Ensure you are adding reviews to the list
-                    updateUIReview(reviews);
+                    // updateUIReview(reviews);
+                    reviewsAdapter.setReviews(reviews);
+                    reviewsAdapter.notifyDataSetChanged();
                 } else {
                     Log.e("MoviesDetailFragment", "Failed to fetch reviews: " + response.message());
                 }
@@ -214,6 +241,80 @@ public class MoviesDetailFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    private void submitReview() {
+        String reviewText = editReviewText.getText().toString().trim();
+        int rating = (int) ratingBar.getRating();
+
+        if (reviewText.isEmpty()) {
+            Toast.makeText(getContext(), "Please write a review!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Dummy user email (Replace with actual user data if available)
+
+
+        prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
+
+        long userId = prefs.getLong("userId", -1);
+        if (userId == -1) {
+            Toast.makeText(getActivity(), "User ID missing. Please login.", Toast.LENGTH_SHORT).show();
+            System.out.println("USER ID MISSING");
+            return;
+        }
+
+        fetchUserById((int) userId);
+
+        // Create Review object
+        ReviewRequest reviewRequest = new ReviewRequest(rating, reviewText, (long) movieId, userId);
+
+        ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+        Call<ResponseBody> call = apiService.submitReview(reviewRequest);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() ) {
+                    Toast.makeText(getContext(), "Review submitted!", Toast.LENGTH_SHORT).show();
+                    editReviewText.setText(""); // Clear input
+                    ratingBar.setRating(0); // Reset rating
+                    fetchMovieReviews(); // Refresh reviews
+                } else {
+                    Toast.makeText(getContext(), "Failed to submit review.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(getContext(), "Error submitting review.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fetchUserById(int userId) {
+        ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+        Call<User> call = apiService.getUserById(userId);
+
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    user = response.body();
+                    Log.d("UserFetch", "User Name: " + user.getUsername());
+                    Toast.makeText(getContext(), "User: " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e("UserFetch", "Failed to fetch user: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Log.e("UserFetch", "Error fetching user", t);
+            }
+        });
+    }
+
+
 
 
 }

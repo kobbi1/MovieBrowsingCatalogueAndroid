@@ -61,7 +61,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
         // Method to bind the review data to the views
         public void bind(Review review) {
             reviewText.setText(review.getReviewText());  // Assuming Review has this method
-            reviewUser.setText(review.getUser().getUsername());  // Assuming User has this method
+            reviewUser.setText(String.valueOf(review.getUser().getUsername()));  // Assuming User has this method
             reviewRating.setText("Rating: " + review.getRating());  // Assuming Review has this method
 
         }

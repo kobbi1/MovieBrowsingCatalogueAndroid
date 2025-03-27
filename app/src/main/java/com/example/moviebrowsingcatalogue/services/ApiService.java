@@ -2,6 +2,7 @@ package com.example.moviebrowsingcatalogue.services;
 
 import com.example.moviebrowsingcatalogue.core.Movie;
 import com.example.moviebrowsingcatalogue.core.MovieDetailResponse;
+import com.example.moviebrowsingcatalogue.core.ReviewRequest;
 import com.example.moviebrowsingcatalogue.core.User;
 import com.example.moviebrowsingcatalogue.core.AuthResponse;
 import com.example.moviebrowsingcatalogue.core.PasswordChangeRequest;
@@ -21,6 +22,8 @@ import retrofit2.http.PUT;
 import retrofit2.http.Header;
 import retrofit2.http.Field;
 import retrofit2.http.Path;
+
+import okhttp3.ResponseBody;
 
 import com.example.moviebrowsingcatalogue.core.Review;
 
@@ -52,6 +55,10 @@ public interface ApiService {
 
     @GET("reviews/movie/{id}")
     Call<List<Review>> getMovieReviews(@Path("id") long id);
+
+
+    @POST("reviews/submit")
+    Call<ResponseBody> submitReview( @Body ReviewRequest reviewRequest);
 
 
 
@@ -95,6 +102,9 @@ public interface ApiService {
 
     @GET("/watchlists/user/{userId}")
     Call<UserWatchlist> getUserWatchlists(@Path("userId") long userId);
+
+    @GET("users/{id}")
+    Call<User> getUserById(@Path("id") long id);
 
 
 
