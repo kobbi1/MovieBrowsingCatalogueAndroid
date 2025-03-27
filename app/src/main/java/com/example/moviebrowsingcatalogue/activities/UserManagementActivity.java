@@ -65,6 +65,7 @@ public class UserManagementActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putLong("userId", loggedInUser.getId());
                         editor.putString("username", loggedInUser.getUsername());
+                        editor.putString("email", loggedInUser.getEmail());
 
                         String sessionId = response.headers().get("Set-Cookie");
                         if (sessionId != null) {
