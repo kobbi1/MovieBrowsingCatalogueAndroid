@@ -6,13 +6,17 @@ public class Review {
     private String reviewText;
     private int rating;
 
-    private User user; // This is where the User object is stored
+    private User user;
+
+    @SerializedName("movie_id")
+    private int movieId;
 
     // Getters
-    public Review(String reviewText, User user, int rating) {
+    public Review(int rating, String reviewText, int movieId, User user) {
         this.reviewText = reviewText;
-        this.user = user;  // Initialize user object
+        this.user = user;
         this.rating = rating;
+        this.movieId = movieId;
     }
 
 
@@ -20,11 +24,9 @@ public class Review {
         return reviewText;
     }
 
-
-    // Getter for user
-    public User getUser() {
-        return user;  // This is the method you're calling in the adapter
-    }
+   public User getUser() {
+        return user;
+   }
 
     public int getRating() {
         return rating;

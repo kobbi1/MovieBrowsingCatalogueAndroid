@@ -103,6 +103,40 @@
             android:padding="8dp"
             android:nestedScrollingEnabled="false"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Write a Review:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
+        <EditText
+            android:id="@+id/editReviewText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Write your review..."
+            android:background="@android:drawable/editbox_background"
+            android:minHeight="100dp"
+            android:padding="10dp"
+            android:gravity="top"
+            android:inputType="textMultiLine" />
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="1.0"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btnSubmitReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit Review"
+            android:layout_marginTop="8dp"/>
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>
