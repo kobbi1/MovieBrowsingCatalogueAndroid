@@ -3,7 +3,6 @@ package com.example.moviebrowsingcatalogue.fragments;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +41,8 @@ public class MyWatchlistsFragment extends Fragment {
 
     private LinearLayout watchlistsContainer;
     private ApiService apiService;
+
+    private MbcDatabase mbcDatabase;
     private SharedPreferences prefs;
 
     @Nullable
@@ -51,6 +52,7 @@ public class MyWatchlistsFragment extends Fragment {
         watchlistsContainer = view.findViewById(R.id.watchlistsContainer);
 
         apiService = RetrofitClient.getClient().create(ApiService.class);
+        mbcDatabase = MbcDatabase.getInstance(requireContext());
         prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
 
         long userId = prefs.getLong("userId", -1);
@@ -103,6 +105,8 @@ public class MyWatchlistsFragment extends Fragment {
 
                         // Add row to container
                         watchlistsContainer.addView(row);
+
+                        saveToLocalDatabase(watchlists,userId);
                     }
 
                     if (watchlists.isEmpty()) {
@@ -187,8 +191,15 @@ public class MyWatchlistsFragment extends Fragment {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(getActivity(), "Deleted \"" + watchlist.getName() + "\"", Toast.LENGTH_SHORT).show();
-                    watchlistsContainer.removeView(rowView);
+                    new Thread(() -> {
+                        mbcDatabase.watchlistStorage().deleteWatchlistById(watchlistId);
+                        mbcDatabase.watchlistStorage().deleteWatchlistItemsByWatchlistId(watchlistId);
+
+                        getActivity().runOnUiThread(() -> {
+                            Toast.makeText(getActivity(), "Deleted \"" + watchlist.getName() + "\"", Toast.LENGTH_SHORT).show();
+                            watchlistsContainer.removeView(rowView);
+                        });
+                    }).start();
                 } else {
                     Toast.makeText(getActivity(), "Failed to delete: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -200,6 +211,21 @@ public class MyWatchlistsFragment extends Fragment {
             }
         });
     }
+
+    private void clearDatabase() {
+        new Thread(() -> {
+            // Clear everything from the database using DAO methods
+            mbcDatabase.watchlistStorage().clearAll();
+
+            // Now update the UI to reflect the changes
+            getActivity().runOnUiThread(() -> {
+                Toast.makeText(getActivity(), "All data cleared!", Toast.LENGTH_SHORT).show();
+                // Optionally, update the UI (clear the container, etc.)
+                watchlistsContainer.removeAllViews();
+            });
+        }).start();
+    }
+
 
 
 

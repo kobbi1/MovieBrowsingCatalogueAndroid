@@ -42,4 +42,18 @@ public interface WatchlistStorage {
 
     @Query("DELETE FROM movies")
     void clearMovies();
+
+    @Query("DELETE FROM watchlists WHERE id = :watchlistId")
+    void deleteWatchlistById(long watchlistId);
+
+    // Delete all items associated with a specific watchlist
+    @Query("DELETE FROM watchlist_items WHERE watchlistId = :watchlistId")
+    void deleteWatchlistItemsByWatchlistId(long watchlistId);
+
+    @Transaction
+    default void  clearAll() {
+        clearWatchlistItems();
+        clearWatchlists();
+        clearMovies();
+    }
 }
