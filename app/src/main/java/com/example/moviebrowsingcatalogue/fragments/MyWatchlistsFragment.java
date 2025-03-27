@@ -13,14 +13,23 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.room.Room;
 
 import com.example.moviebrowsingcatalogue.R;
 import com.example.moviebrowsingcatalogue.RetrofitClient;
+import com.example.moviebrowsingcatalogue.core.Movie;
 import com.example.moviebrowsingcatalogue.core.UserWatchlist;
 import com.example.moviebrowsingcatalogue.core.Watchlist;
+import com.example.moviebrowsingcatalogue.entities.MovieEntity;
+import com.example.moviebrowsingcatalogue.entities.WatchlistEntity;
+import com.example.moviebrowsingcatalogue.entities.WatchlistItemEntity;
 import com.example.moviebrowsingcatalogue.services.ApiService;
+import com.example.moviebrowsingcatalogue.storage.MbcDatabase;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,6 +78,9 @@ public class MyWatchlistsFragment extends Fragment {
                         watchlistText.setGravity(Gravity.START);
 
                         watchlistsContainer.addView(watchlistText);
+
+
+                        saveToLocalDatabase(watchlists, userId);
                     }
 
                     if (watchlists.isEmpty()) {
@@ -90,6 +102,53 @@ public class MyWatchlistsFragment extends Fragment {
                 t.printStackTrace();
             }
         });
+    }
+
+
+    private void saveToLocalDatabase(List<Watchlist> watchlists, long userId) {
+        MbcDatabase db = Room.databaseBuilder(
+                requireContext(),
+                MbcDatabase.class,
+                "mbc_database"
+        ).build();
+
+        new Thread(() -> {
+            List<WatchlistEntity> watchlistEntities = new ArrayList<>();
+            List<MovieEntity> movieEntities = new ArrayList<>();
+            List<WatchlistItemEntity> joinItems = new ArrayList<>();
+            Set<Long> movieIdsSeen = new HashSet<>();
+
+            for (Watchlist watchlist : watchlists) {
+                WatchlistEntity watchlistEntity = new WatchlistEntity();
+                watchlistEntity.id = watchlist.getId();
+                watchlistEntity.name = watchlist.getName();
+                watchlistEntity.userId = userId;
+                watchlistEntities.add(watchlistEntity);
+
+                List<Movie> movies = watchlist.getMovies();
+                if(movies != null) {
+                    for (Movie movie : watchlist.getMovies()) {
+                        if (!movieIdsSeen.contains((long) movie.getId())) {
+                            MovieEntity movieEntity = new MovieEntity();
+                            movieEntity.id = movie.getId();
+                            movieEntity.title = movie.getTitle();
+                            movieEntity.description = movie.getDescription();
+                            movieEntities.add(movieEntity);
+                            movieIdsSeen.add((long) movie.getId());
+                        }
+
+                        WatchlistItemEntity item = new WatchlistItemEntity();
+                        item.watchlistId = watchlist.getId();
+                        item.movieId = movie.getId();
+                        joinItems.add(item);
+                    }
+                }
+            }
+
+            db.watchlistStorage().insertWatchlists(watchlistEntities);
+            db.watchlistStorage().insertMovies(movieEntities);
+            db.watchlistStorage().insertWatchlistItems(joinItems);
+        }).start();
     }
 
 
