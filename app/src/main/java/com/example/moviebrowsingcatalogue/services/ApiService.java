@@ -61,6 +61,12 @@ public interface ApiService {
     @POST("reviews/submit")
     Call<ResponseBody> submitReview( @Body ReviewRequest reviewRequest);
 
+    @GET("reviews/{movie_id}/{user_id}")
+    Call<Review> getReviewByMovieIdAndUserId(
+            @Path("movie_id") long movieId,
+            @Path("user_id") long userId
+    );
+
 
 
 
