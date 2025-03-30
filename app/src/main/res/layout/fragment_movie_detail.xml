@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true">  <!-- Ensures it takes the full screen -->
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -124,18 +124,34 @@
 
         <RatingBar
             android:id="@+id/ratingBar"
-            android:layout_width="wrap_content"
+            android:layout_width="229dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:numStars="5"
-            android:stepSize="1.0"
-            android:layout_marginTop="8dp" />
+            android:stepSize="1.0" />
 
-        <Button
-            android:id="@+id/btnSubmitReview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Submit Review"
-            android:layout_marginTop="8dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnSubmitReview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="0.5"
+                android:text="Submit Review" />
+
+            <Button
+                android:id="@+id/addtoWatchlist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="0.5"
+                android:text="Add to Watchlist" />
+        </LinearLayout>
+
 
     </LinearLayout>
 
