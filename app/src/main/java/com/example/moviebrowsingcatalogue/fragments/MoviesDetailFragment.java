@@ -73,6 +73,8 @@ public class MoviesDetailFragment extends Fragment {
     private RatingBar ratingBar;
     private Button btnSubmitReview , addtoWatchlist;
 
+    private TextView reviewTextHead;
+
     private SharedPreferences prefs;
 
 
@@ -107,7 +109,6 @@ public class MoviesDetailFragment extends Fragment {
         editReviewText = rootView.findViewById(R.id.editReviewText);
         ratingBar = rootView.findViewById(R.id.ratingBar);
         btnSubmitReview = rootView.findViewById(R.id.btnSubmitReview);
-        addtoWatchlist = rootView.findViewById(R.id.addtoWatchlist);
 
 
         btnSubmitReview.setOnClickListener(v -> submitReview());
@@ -118,9 +119,36 @@ public class MoviesDetailFragment extends Fragment {
         reviewsAdapter = new ReviewsAdapter(reviews);
         reviewsRecyclerView.setAdapter(reviewsAdapter);
 
-        if (movieId > 0) {  // Ensure valid movie ID before fetching
+
+        prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
+        String username = prefs.getString("username", null);
+        Long userId = prefs.getLong("userId", -1);
+
+
+        if (username != null) {
+            btnSubmitReview.setVisibility(View.VISIBLE);
+            editReviewText.setVisibility(View.VISIBLE);
+            ratingBar.setVisibility(View.VISIBLE);
+            reviewTextHead.setVisibility(View.VISIBLE);
+            reviewTextHead.setText("Write a Review:");
+
+
+
+        } else {
+            btnSubmitReview.setVisibility(View.GONE);
+            editReviewText.setVisibility(View.GONE);
+            ratingBar.setVisibility(View.GONE);
+            reviewTextHead.setText("Login to write a review!");
+        }
+
+        if (movieId > 0 ) {  // Ensure valid movie ID before fetching
             fetchMovieDetails();
             fetchMovieReviews();
+
+        }
+
+        if(movieId > 0 && userId > 0){
+            checkUserReview(movieId, userId);
         }
 
         return rootView;
@@ -222,6 +250,42 @@ public class MoviesDetailFragment extends Fragment {
                 actorsContainer.addView(actorView);  // Add the actor view to the container
             }
         }
+    }
+
+    private void checkUserReview(long movieId, long userId) {
+        ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+        Call<Review> call = apiService.getReviewByMovieIdAndUserId(movieId, userId);
+
+        call.enqueue(new Callback<Review>() {
+            @Override
+            public void onResponse(Call<Review> call, Response<Review> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Review userReview = response.body();
+                    showToast("You have already reviewed this movie.");
+                    disableReviewSubmission(userReview); // 
+                } else {
+                    showToast("No review found, you can submit one.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Review> call, Throwable t) {
+                showToast("Error checking user review.");
+            }
+        });
+    }
+
+    private void disableReviewSubmission(Review userReview) {
+        Button submitReviewButton = rootView.findViewById(R.id.btnSubmitReview);
+        submitReviewButton.setEnabled(false);
+        submitReviewButton.setText("Review Submitted"); // Optional UI update
+
+
+        TextView existingReviewText = rootView.findViewById(R.id.reviewTextHead);
+        TextView editReviewText = rootView.findViewById(R.id.editReviewText);
+        editReviewText.setText(userReview.getReviewText());
+        existingReviewText.setVisibility(View.VISIBLE);
+        existingReviewText.setText("Your Review: " + userReview.getReviewText());
     }
 
     private void updateUIReview(List<Review> reviews) {
@@ -329,10 +393,10 @@ public class MoviesDetailFragment extends Fragment {
             return;
         }
 
-        String cookieHeader = "JSESSIONID=" + sessionId; // 👈 this is the key
-        ApiService apiService = RetrofitClient.getClient().create(ApiService.class); // ✅ no change here
+        String cookieHeader = "JSESSIONID=" + sessionId; 
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class); 
 
-        Call<ResponseBody> call = apiService.addMovieToWatchlist(movieId, watchlistId, cookieHeader); // ✅ just send cookie manually
+        Call<ResponseBody> call = apiService.addMovieToWatchlist(movieId, watchlistId, cookieHeader); 
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override

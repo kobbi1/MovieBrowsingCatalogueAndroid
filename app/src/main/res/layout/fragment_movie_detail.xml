@@ -104,6 +104,7 @@
             android:nestedScrollingEnabled="false"/>
 
         <TextView
+            android:id="@+id/reviewTextHead"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Write a Review:"
@@ -115,7 +116,6 @@
             android:id="@+id/editReviewText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Write your review..."
             android:background="@android:drawable/editbox_background"
             android:minHeight="100dp"
             android:padding="10dp"
