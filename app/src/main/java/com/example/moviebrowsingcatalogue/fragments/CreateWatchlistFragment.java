@@ -81,7 +81,7 @@ public class CreateWatchlistFragment extends Fragment {
                     requireActivity().getSupportFragmentManager().popBackStack();
                 } else {
                     Toast.makeText(getActivity(), "Failed: " + response.code(), Toast.LENGTH_LONG).show();
-                    System.out.println("ERROR: " + response.errorBody()); // Print error details
+                    System.out.println("ERROR: " + response.errorBody().toString()); // Print error details
                 }
             }
 
