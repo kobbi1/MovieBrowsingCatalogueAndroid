@@ -109,6 +109,8 @@ public class MoviesDetailFragment extends Fragment {
         editReviewText = rootView.findViewById(R.id.editReviewText);
         ratingBar = rootView.findViewById(R.id.ratingBar);
         btnSubmitReview = rootView.findViewById(R.id.btnSubmitReview);
+        reviewTextHead = rootView.findViewById(R.id.reviewTextHead);
+        addtoWatchlist = rootView.findViewById(R.id.addtoWatchlist);
 
 
         btnSubmitReview.setOnClickListener(v -> submitReview());
