@@ -1,5 +1,7 @@
 package com.example.moviebrowsingcatalogue.fragments;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -25,6 +27,8 @@ import com.example.moviebrowsingcatalogue.RetrofitClient;
 import com.example.moviebrowsingcatalogue.core.Movie;
 import com.example.moviebrowsingcatalogue.core.ReviewRequest;
 import com.example.moviebrowsingcatalogue.core.User;
+import com.example.moviebrowsingcatalogue.core.UserWatchlist;
+import com.example.moviebrowsingcatalogue.core.Watchlist;
 import com.example.moviebrowsingcatalogue.services.ApiService;
 import com.example.moviebrowsingcatalogue.core.MovieDetailResponse;
 import com.example.moviebrowsingcatalogue.core.Actor;
@@ -67,7 +71,7 @@ public class MoviesDetailFragment extends Fragment {
 
     private EditText editReviewText;
     private RatingBar ratingBar;
-    private Button btnSubmitReview;
+    private Button btnSubmitReview , addtoWatchlist;
 
     private TextView reviewTextHead;
 
@@ -105,9 +109,10 @@ public class MoviesDetailFragment extends Fragment {
         editReviewText = rootView.findViewById(R.id.editReviewText);
         ratingBar = rootView.findViewById(R.id.ratingBar);
         btnSubmitReview = rootView.findViewById(R.id.btnSubmitReview);
-        reviewTextHead = rootView.findViewById(R.id.reviewTextHead);
+
 
         btnSubmitReview.setOnClickListener(v -> submitReview());
+        addtoWatchlist.setOnClickListener(v -> showWatchlistPickerDialog(movieId));
 
         reviewsRecyclerView = rootView.findViewById(R.id.reviewsRecyclerView);
         reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -257,7 +262,7 @@ public class MoviesDetailFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     Review userReview = response.body();
                     showToast("You have already reviewed this movie.");
-                    disableReviewSubmission(userReview); // ✅ Disable if review exists
+                    disableReviewSubmission(userReview); // 
                 } else {
                     showToast("No review found, you can submit one.");
                 }
@@ -379,6 +384,89 @@ public class MoviesDetailFragment extends Fragment {
             }
         });
     }
+    private void addToWatchlist(long movieId, long watchlistId) {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String sessionId = prefs.getString("sessionId", null);
+
+        if (sessionId == null) {
+            Toast.makeText(getContext(), "You're not logged in!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String cookieHeader = "JSESSIONID=" + sessionId; 
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class); 
+
+        Call<ResponseBody> call = apiService.addMovieToWatchlist(movieId, watchlistId, cookieHeader); 
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getContext(), "Movie added to watchlist!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Failed to add to watchlist. Code: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+}
+
+
+
+    private void showWatchlistPickerDialog(long movieId) {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
+        long userId = prefs.getLong("userId", -1);
+        if (userId == -1) {
+            Toast.makeText(getContext(), "User ID missing. Please login.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+
+        apiService.getUserWatchlists(userId).enqueue(new Callback<UserWatchlist>() {
+            @Override
+            public void onResponse(Call<UserWatchlist> call, Response<UserWatchlist> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Watchlist> watchlists = response.body().getUserWatchlists();
+                    if (watchlists == null || watchlists.isEmpty()) {
+                        Toast.makeText(getContext(), "You have no watchlists.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String[] watchlistNames = new String[watchlists.size()];
+                    for (int i = 0; i < watchlists.size(); i++) {
+                        watchlistNames[i] = watchlists.get(i).getName();
+                    }
+
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle("Select Watchlist")
+                            .setItems(watchlistNames, (dialog, which) -> {
+                                long selectedWatchlistId = watchlists.get(which).getId();
+                                addToWatchlist(movieId, selectedWatchlistId);
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+
+                } else {
+                    Toast.makeText(getContext(), "Failed to fetch watchlists.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserWatchlist> call, Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
 
 
 

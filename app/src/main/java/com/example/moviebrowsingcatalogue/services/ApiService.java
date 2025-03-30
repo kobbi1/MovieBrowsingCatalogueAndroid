@@ -25,6 +25,7 @@ import retrofit2.http.Field;
 import retrofit2.http.Path;
 
 import okhttp3.ResponseBody;
+import retrofit2.http.Query;
 
 import com.example.moviebrowsingcatalogue.core.Review;
 
@@ -115,6 +116,34 @@ public interface ApiService {
 
     @DELETE("watchlists/delete/{watchlistId}/user/{userId}")
     Call<Void> deleteWatchlist(@Path("watchlistId") long watchlistId, @Path("userId") long userId);
+
+
+    @POST("movies/add-to-watchlist")
+    Call<ResponseBody> addMovieToWatchlist(
+            @Query("movieId") long movieId,
+            @Query("watchlistId") long watchlistId,
+            @Header("Cookie") String sessionCookie
+    );
+
+
+    @POST("tvshows/add-to-watchlist")
+    Call<ResponseBody> addTvShowToWatchlist(
+            @Query("movieId") long movieId,
+            @Query("watchlistId") long watchlistId
+    );
+
+    @GET("watchlists/{watchlistId}")
+    Call<Map<String, Object>> getWatchlistById(
+            @Path("watchlistId") long watchlistId
+    );
+    @DELETE("watchlists/{watchlistId}/remove-movie/{movieId}")
+    Call<Map<String, String>> removeMovieFromWatchlist(
+            @Path("watchlistId") long watchlistId,
+            @Path("movieId") long movieId,
+            @Header("Cookie") String sessionId
+    );
+
+
 
 
 
