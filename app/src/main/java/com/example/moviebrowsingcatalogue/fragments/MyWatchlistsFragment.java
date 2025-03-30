@@ -2,6 +2,7 @@ package com.example.moviebrowsingcatalogue.fragments;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,10 +87,18 @@ public class MyWatchlistsFragment extends Fragment {
                         ));
 
                         // Watchlist name
-                        TextView nameView = new TextView(getActivity());
-                        nameView.setText(watchlist.getName());
-                        nameView.setTextSize(18f);
-                        nameView.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+                        TextView linkText = new TextView(getActivity());
+                        linkText.setText(watchlist.getName());
+                        linkText.setTextSize(18f);
+                        linkText.setPadding(16, 16, 16, 16);
+                        linkText.setClickable(true);
+
+                        linkText.setPaintFlags(linkText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+                        linkText.setOnClickListener(v -> openWatchlistItemsFragment(watchlist.getId(), watchlist.getName()));
+
+                        row.addView(linkText);
+
 
                         // Delete button
                         Button deleteBtn = new Button(getActivity());
@@ -100,7 +109,6 @@ public class MyWatchlistsFragment extends Fragment {
                         deleteBtn.setOnClickListener(v -> deleteWatchlist(watchlist, row));
 
                         // Add views to row
-                        row.addView(nameView);
                         row.addView(deleteBtn);
 
                         // Add row to container
@@ -225,6 +233,21 @@ public class MyWatchlistsFragment extends Fragment {
             });
         }).start();
     }
+    private void openWatchlistItemsFragment(long watchlistId, String watchlistName) {
+        WatchlistItemsFragment fragment = new WatchlistItemsFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putLong("watchlistId", watchlistId);
+        bundle.putString("watchlistName", watchlistName);
+        fragment.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment) // or your container ID
+                .addToBackStack(null)
+                .commit();
+    }
+
 
 
 
