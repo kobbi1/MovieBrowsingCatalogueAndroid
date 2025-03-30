@@ -67,12 +67,14 @@ public class UserManagementActivity extends AppCompatActivity {
                         editor.putString("username", loggedInUser.getUsername());
                         editor.putString("email", loggedInUser.getEmail());
 
-                        String sessionId = response.headers().get("Set-Cookie");
-                        if (sessionId != null) {
+                        String setCookie = response.headers().get("Set-Cookie");
+                        if (setCookie != null && setCookie.contains("JSESSIONID")) {
+                            String sessionId = setCookie.split(";")[0].split("=")[1];
                             editor.putString("sessionId", sessionId);
                         } else {
-                            System.out.println("No Session ID found in response headers!");
+                            System.out.println("No valid JSESSIONID in Set-Cookie header");
                         }
+
                         editor.apply();
 
                         Toast.makeText(UserManagementActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
