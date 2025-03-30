@@ -57,13 +57,14 @@ public class CreateWatchlistFragment extends Fragment {
 
             SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
             String sessionId = prefs.getString("sessionId", "");
+            String cookie = "JSESSIONID=" + sessionId;
 
             if (sessionId.isEmpty()) {
                 Toast.makeText(getActivity(), "Session ID missing! Login required.", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            createWatchlist(watchlist, sessionId);
+            createWatchlist(watchlist, cookie);
         });
 
 
