@@ -7,4 +7,7 @@
     <color name="teal_700">#018786</color>
     <color name="delete">#A10000</color>
     <color name="error">#FF0000</color>
+    <color name="bars">#323332</color>
+    <color name="nav_items">#FFFFFF</color>
+    <color name="selected_nav">#F6C600</color>
     </resources>

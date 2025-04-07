@@ -88,6 +88,13 @@ public class WatchlistItemsFragment extends Fragment {
     }
 
     private void setupSwipeToDelete() {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String session = prefs.getString("sessionId", null);
+
+        if (session == null) {
+            Toast.makeText(getContext(), "Login to remove items from watchlist.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {

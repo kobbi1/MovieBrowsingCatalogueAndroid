@@ -1,7 +1,7 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="20dp">
 
@@ -21,10 +21,13 @@
         android:textSize="18sp"
         android:visibility="gone"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/bars"
+        android:textColor="@android:color/white"
+        app:cornerRadius="5dp"
         android:text="Login"/>
 
     <TextView
@@ -38,17 +41,23 @@
         android:layout_marginTop="10dp"
         android:layout_gravity="center"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/editProfileButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/bars"
+        android:textColor="@android:color/white"
+        app:cornerRadius="5dp"
         android:text="Edit Profile"
         android:visibility="gone"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/logoutButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/bars"
+        android:textColor="@android:color/white"
+        app:cornerRadius="5dp"
         android:text="Logout"
         android:visibility="gone"/>
 
@@ -58,17 +67,23 @@
         android:rotationX="0"
         android:scaleX="20" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/createWatchlistButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/bars"
+        android:textColor="@android:color/white"
+        app:cornerRadius="5dp"
         android:text="Create Watchlist"
         android:visibility="visible" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/myWatchlistsButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/bars"
+        android:textColor="@android:color/white"
+        app:cornerRadius="5dp"
         android:text="My Watchlists"
         android:visibility="visible" />
 

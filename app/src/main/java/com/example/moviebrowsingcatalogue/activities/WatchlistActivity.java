@@ -12,7 +12,7 @@ public class WatchlistActivity extends NavigationActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_watchlists);
 
-        setupNavigation(0, "Watchlists");
+        setupNavigation(R.id.nav_watchlist, "All User Watchlists");
 
         loadFragment(new WatchlistsFragment());
     }
