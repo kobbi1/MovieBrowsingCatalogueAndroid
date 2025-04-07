@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import com.example.moviebrowsingcatalogue.R;
 import com.example.moviebrowsingcatalogue.activities.ChangePasswordActivity;
 import com.example.moviebrowsingcatalogue.activities.EditProfileActivity;
+import com.example.moviebrowsingcatalogue.activities.HomeActivity;
+import com.example.moviebrowsingcatalogue.activities.ProfileActivity;
 import com.example.moviebrowsingcatalogue.activities.RegisterActivity;
 import com.example.moviebrowsingcatalogue.activities.UserManagementActivity;
 import com.example.moviebrowsingcatalogue.activities.CreateWatchlistActivity;
@@ -54,7 +56,7 @@ public class ProfileFragment extends Fragment {
             emailTextView.setVisibility(View.GONE);
             logoutButton.setVisibility(View.GONE);
             editProfileButton.setVisibility(View.GONE);
-            myWatchlistsButton.setVisibility(View.GONE);
+            myWatchlistsButton.setVisibility(View.VISIBLE);
             createWatchlistButton.setVisibility(View.GONE);
 
             loginButton.setVisibility(View.VISIBLE);
@@ -119,7 +121,7 @@ public class ProfileFragment extends Fragment {
         editor.clear();
         editor.apply();
 
-        Intent intent = new Intent(getActivity(), UserManagementActivity.class);
+        Intent intent = new Intent(getActivity(), ProfileActivity.class);
         startActivity(intent);
         requireActivity().finish();
     }

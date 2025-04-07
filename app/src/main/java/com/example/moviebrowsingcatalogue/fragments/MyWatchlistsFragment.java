@@ -26,6 +26,7 @@ import com.example.moviebrowsingcatalogue.core.Watchlist;
 import com.example.moviebrowsingcatalogue.entities.MovieEntity;
 import com.example.moviebrowsingcatalogue.entities.WatchlistEntity;
 import com.example.moviebrowsingcatalogue.entities.WatchlistItemEntity;
+import com.example.moviebrowsingcatalogue.entities.WatchlistWithMovies;
 import com.example.moviebrowsingcatalogue.services.ApiService;
 import com.example.moviebrowsingcatalogue.storage.MbcDatabase;
 
@@ -58,7 +59,8 @@ public class MyWatchlistsFragment extends Fragment {
 
         long userId = prefs.getLong("userId", -1);
         if (userId == -1) {
-            Toast.makeText(getActivity(), "User ID missing. Please login.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Not logged in. Showing local watchlists only.", Toast.LENGTH_SHORT).show();
+            fetchWatchlists(-1);
             return view;
         }
 
@@ -67,76 +69,93 @@ public class MyWatchlistsFragment extends Fragment {
     }
 
 
+
     private void fetchWatchlists(long userId) {
-        Call<UserWatchlist> call = apiService.getUserWatchlists(userId);
+        new Thread(() -> {
+            List<WatchlistWithMovies> localWatchlists = mbcDatabase.watchlistStorage().getAllWatchlistsWithMovies();
 
-        call.enqueue(new Callback<UserWatchlist>() {
-            @Override
-            public void onResponse(Call<UserWatchlist> call, Response<UserWatchlist> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Watchlist> watchlists = response.body().getUserWatchlists();
+            requireActivity().runOnUiThread(() -> {
+                if (localWatchlists.isEmpty()) {
+                    TextView emptyText = new TextView(getActivity());
+                    emptyText.setText("You have no watchlists yet.");
+                    emptyText.setTextSize(16f);
+                    emptyText.setPadding(0, 16, 0, 0);
+                    watchlistsContainer.addView(emptyText);
+                    return;
+                }
 
-                    for (Watchlist watchlist : watchlists) {
-                        // Row container
-                        LinearLayout row = new LinearLayout(getActivity());
-                        row.setOrientation(LinearLayout.HORIZONTAL);
-                        row.setPadding(0, 16, 0, 16);
-                        row.setLayoutParams(new LinearLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT
-                        ));
+                for (WatchlistWithMovies watchlistWithMovies : localWatchlists) {
+                    WatchlistEntity watchlist = watchlistWithMovies.watchlist;
 
-                        // Watchlist name
-                        TextView linkText = new TextView(getActivity());
-                        linkText.setText(watchlist.getName());
-                        linkText.setTextSize(18f);
-                        linkText.setPadding(16, 16, 16, 16);
-                        linkText.setClickable(true);
+                    // Row container
+                    LinearLayout row = new LinearLayout(getActivity());
+                    row.setOrientation(LinearLayout.HORIZONTAL);
+                    row.setPadding(0, 16, 0, 16);
+                    row.setLayoutParams(new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                    ));
 
-                        linkText.setPaintFlags(linkText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                    // Watchlist name
+                    TextView linkText = new TextView(getActivity());
+                    linkText.setText(watchlist.name);
+                    linkText.setTextSize(18f);
+                    linkText.setPadding(16, 16, 16, 16);
+                    linkText.setClickable(true);
+                    linkText.setPaintFlags(linkText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                    linkText.setOnClickListener(v -> openWatchlistItemsFragment(watchlist.id, watchlist.name));
 
-                        linkText.setOnClickListener(v -> openWatchlistItemsFragment(watchlist.getId(), watchlist.getName()));
+                    row.addView(linkText);
 
-                        row.addView(linkText);
-
-
-                        // Delete button
+                    // Only show delete if user is logged in
+                    long loggedInUserId = prefs.getLong("userId", -1);
+                    if (loggedInUserId != -1) {
                         Button deleteBtn = new Button(getActivity());
                         deleteBtn.setText("Delete");
                         deleteBtn.setTextSize(14f);
-                        deleteBtn.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.delete)); // or R.color.secondary
+                        deleteBtn.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.delete));
                         deleteBtn.setTextColor(Color.WHITE);
-                        deleteBtn.setOnClickListener(v -> deleteWatchlist(watchlist, row));
 
-                        // Add views to row
+                        deleteBtn.setOnClickListener(v -> {
+                            deleteWatchlistAndSync(watchlist.id, loggedInUserId, row, watchlist.name);
+                        });
+
                         row.addView(deleteBtn);
-
-                        // Add row to container
-                        watchlistsContainer.addView(row);
-
-                        saveToLocalDatabase(watchlists,userId);
                     }
 
-                    if (watchlists.isEmpty()) {
-                        TextView emptyText = new TextView(getActivity());
-                        emptyText.setText("You have no watchlists yet.");
-                        emptyText.setTextSize(16f);
-                        emptyText.setPadding(0, 16, 0, 0);
-                        watchlistsContainer.addView(emptyText);
-                    }
+                    watchlistsContainer.addView(row);
+                }
+            });
+        }).start();
+    }
 
+    private void deleteWatchlistAndSync(long watchlistId, long userId, View rowView, String watchlistName) {
+        Call<Void> call = apiService.deleteWatchlist(watchlistId, userId);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    new Thread(() -> {
+                        mbcDatabase.watchlistStorage().deleteWatchlistById(watchlistId);
+                        mbcDatabase.watchlistStorage().deleteWatchlistItemsByWatchlistId(watchlistId);
+                        requireActivity().runOnUiThread(() -> {
+                            Toast.makeText(getActivity(), "Deleted \"" + watchlistName + "\"", Toast.LENGTH_SHORT).show();
+                            watchlistsContainer.removeView(rowView);
+                        });
+                    }).start();
                 } else {
-                    Toast.makeText(getActivity(), "Failed to load watchlists: " + response.code(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Failed to delete: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<UserWatchlist> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                t.printStackTrace();
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+
 
 
     private void saveToLocalDatabase(List<Watchlist> watchlists, long userId) {

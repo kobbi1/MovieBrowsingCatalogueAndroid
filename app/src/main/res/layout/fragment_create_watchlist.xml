@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -16,6 +17,9 @@
         android:id="@+id/createWatchlistButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/bars"
+        android:textColor="@android:color/white"
+        app:cornerRadius="5dp"
         android:text="Create Watchlist"
         android:layout_marginTop="16dp"/>
 </LinearLayout>

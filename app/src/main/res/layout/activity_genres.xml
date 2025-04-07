@@ -15,10 +15,11 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/bars"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:titleTextColor="@android:color/white"
             app:navigationIcon="@drawable/ic_menu" />
+
 
         <FrameLayout
             android:id="@+id/fragment_container"
@@ -30,8 +31,12 @@
             android:id="@+id/bottomNavigationView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/bars"
+            app:titleTextColor="@android:color/white"
+            app:itemIconTint="@color/nav_items"
+            app:itemTextColor="@color/nav_items"
             android:elevation="8dp"
+            app:labelVisibilityMode="labeled"
             app:menu="@menu/bottom_nav_menu"/>
     </LinearLayout>
 

@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -17,15 +18,21 @@
         android:hint="Password"
         android:inputType="textPassword" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/bars"
+        android:textColor="@android:color/white"
+        app:cornerRadius="5dp"
         android:text="Login" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/bars"
+        android:textColor="@android:color/white"
+        app:cornerRadius="5dp"
         android:text="Register" />
 </LinearLayout>

@@ -13,7 +13,7 @@ public class HomeActivity extends NavigationActivity {
         setContentView(R.layout.activity_home);
 
         // ✅ Calls the setupNavigation method from NavigationActivity
-        setupNavigation(R.id.nav_home, "Home");
+        setupNavigation(R.id.nav_home, "Movie Browsing Catalogue");
 
         // ✅ Ensure the fragment is only loaded once
         if (savedInstanceState == null) {

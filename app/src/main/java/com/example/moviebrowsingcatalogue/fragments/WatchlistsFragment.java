@@ -75,7 +75,7 @@ public class WatchlistsFragment extends Fragment {
             watchlistTextView.setGravity(Gravity.CENTER_VERTICAL);
             watchlistTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
 
-            watchlistTextView.setOnClickListener(v -> openWatchlistDetails(watchlist.getId()));
+            watchlistTextView.setOnClickListener(v -> openWatchlistDetails(watchlist.getId(), watchlist.getName()));
 
             watchlistsContainer.addView(watchlistTextView);
 
@@ -85,12 +85,20 @@ public class WatchlistsFragment extends Fragment {
         }
     }
 
-    private void openWatchlistDetails(Long watchlistId) {
-        if (getActivity() == null) return;
-        //Intent intent = new Intent(getActivity(), WatchlistDetailsActivity.class);
-        //intent.putExtra("watchlistId", watchlistId);
-        //startActivity(intent);
+    private void openWatchlistDetails(Long watchlistId, String watchlistName) {
+        WatchlistItemsFragment fragment = new WatchlistItemsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putLong("watchlistId", watchlistId);
+        bundle.putString("watchlistName", watchlistName);
+        fragment.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
+
 
     private void showNoWatchlistsMessage() {
         TextView noWatchlistsText = new TextView(requireContext());

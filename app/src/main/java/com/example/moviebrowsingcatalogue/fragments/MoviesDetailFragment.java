@@ -29,9 +29,13 @@ import com.example.moviebrowsingcatalogue.core.ReviewRequest;
 import com.example.moviebrowsingcatalogue.core.User;
 import com.example.moviebrowsingcatalogue.core.UserWatchlist;
 import com.example.moviebrowsingcatalogue.core.Watchlist;
+import com.example.moviebrowsingcatalogue.entities.MovieEntity;
+import com.example.moviebrowsingcatalogue.entities.WatchlistItemEntity;
 import com.example.moviebrowsingcatalogue.services.ApiService;
 import com.example.moviebrowsingcatalogue.core.MovieDetailResponse;
 import com.example.moviebrowsingcatalogue.core.Actor;
+import com.example.moviebrowsingcatalogue.storage.MbcDatabase;
+import com.example.moviebrowsingcatalogue.storage.WatchlistStorage;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.shape.CornerFamily;
 
@@ -132,6 +136,7 @@ public class MoviesDetailFragment extends Fragment {
             editReviewText.setVisibility(View.VISIBLE);
             ratingBar.setVisibility(View.VISIBLE);
             reviewTextHead.setVisibility(View.VISIBLE);
+            addtoWatchlist.setVisibility(View.VISIBLE);
             reviewTextHead.setText("Write a Review:");
 
 
@@ -140,6 +145,7 @@ public class MoviesDetailFragment extends Fragment {
             btnSubmitReview.setVisibility(View.GONE);
             editReviewText.setVisibility(View.GONE);
             ratingBar.setVisibility(View.GONE);
+            addtoWatchlist.setVisibility(View.GONE);
             reviewTextHead.setText("Login to write a review!");
         }
 
@@ -405,6 +411,28 @@ public class MoviesDetailFragment extends Fragment {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Movie added to watchlist!", Toast.LENGTH_SHORT).show();
+
+                    new Thread(() -> {
+                        MbcDatabase db = MbcDatabase.getInstance(requireContext());
+                        WatchlistStorage storage = db.watchlistStorage();
+
+                        MovieEntity movieEntity = new MovieEntity();
+                        movieEntity.id = movie.getId();
+                        movieEntity.title = movie.getTitle();
+                        movieEntity.description = movie.getDescription();
+
+                        WatchlistItemEntity itemEntity = new WatchlistItemEntity();
+                        itemEntity.watchlistId = watchlistId;
+                        itemEntity.movieId = movie.getId();
+
+                        try {
+                            storage.insertMovies(List.of(movieEntity));
+                            storage.insertWatchlistItems(List.of(itemEntity));
+                            Log.d("LocalDB", "Movie and watchlist item saved locally.");
+                        } catch (Exception e) {
+                            Log.e("LocalDB", "Error saving to local DB", e);
+                        }
+                    }).start();
                 } else {
                     Toast.makeText(getContext(), "Failed to add to watchlist. Code: " + response.code(), Toast.LENGTH_SHORT).show();
                 }

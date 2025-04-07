@@ -46,6 +46,7 @@ public class NavigationActivity extends AppCompatActivity {
 
         if (selectedNavItemId == R.id.nav_top_movies ||
                 selectedNavItemId == R.id.nav_watchlist ||
+                selectedNavItemId == R.id.nav_genres ||
                 selectedNavItemId == R.id.nav_settings) {
 
             bottomNavigationView.getMenu().setGroupCheckable(0, true, false);
